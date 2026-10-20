@@ -46,7 +46,7 @@ public class DataInitializer implements CommandLineRunner {
 
     private Sport sport(String name, String color) {
         return sportRepository.findByName(name)
-                .orElseGet(() -> sportRepository.save(new Sport(name, color, null)));
+                .orElseGet(() -> sportRepository.save(new Sport(name, color)));
     }
 
     private void seedVenues(List<Venue> venues) {

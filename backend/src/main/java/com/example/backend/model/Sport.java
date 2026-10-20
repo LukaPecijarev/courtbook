@@ -29,11 +29,8 @@ public class Sport {
     @Column(nullable = false, length = 7)
     private String color;
 
-    private String imageUrl;
-
-    public Sport(String name, String color, String imageUrl) {
+    public Sport(String name, String color) {
         this.name = name;
         this.color = color;
-        this.imageUrl = imageUrl;
     }
 }

@@ -3,23 +3,19 @@ package com.example.backend.dto;
 import com.example.backend.model.Booking;
 import com.example.backend.model.BookingType;
 import com.example.backend.model.Sport;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import java.time.LocalDateTime;
 
 public record BookingResponse(
-        @NotNull Long id,
-        @NotNull BookingType type,
-        @NotNull Long venueId,
-        @NotBlank String venueName,
+        Long id,
+        BookingType type,
+        Long venueId,
+        String venueName,
         Long sportId,
         String sportName,
-        @NotNull LocalDateTime startAt,
-        @Positive int durationMinutes,
+        LocalDateTime startAt,
+        int durationMinutes,
         String customerName,
-        @Email String customerEmail) {
+        String customerEmail) {
 
     public static BookingResponse from(Booking booking) {
         Sport sport = booking.getSport();

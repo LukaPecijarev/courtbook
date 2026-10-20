@@ -1,6 +1,5 @@
 package com.example.backend.repository;
 
-import com.example.backend.exception.NotFoundException;
 import com.example.backend.model.Venue;
 import java.util.List;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -20,8 +19,4 @@ public interface VenueRepository extends JpaRepository<Venue, Long> {
     List<Venue> findAllOfferingSport(@Param("sportId") Long sportId);
 
     boolean existsByName(String name);
-
-    default Venue findByIdOrThrow(Long id) {
-        return findById(id).orElseThrow(() -> new NotFoundException("Venue not found: " + id));
-    }
 }

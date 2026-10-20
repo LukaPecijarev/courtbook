@@ -29,6 +29,7 @@ public class HostApplicationServiceImpl implements HostApplicationService {
     private final SportRepository sportRepository;
     private final BookingRepository bookingRepository;
     private final BookingWriter bookingWriter;
+    private final EntityLookup entityLookup;
 
     @Override
     @Transactional
@@ -42,7 +43,7 @@ public class HostApplicationServiceImpl implements HostApplicationService {
     @Override
     @Transactional
     public BookingResponse blockSlot(Long venueId, CreateBlockRequest request) {
-        Venue venue = venueRepository.findByIdOrThrow(venueId);
+        Venue venue = entityLookup.venue(venueId);
         Booking booking = bookingWriter.save(venueId, request.startAt(),
                 () -> Booking.blocked(venue, request.startAt()));
         return BookingResponse.from(booking);
@@ -51,9 +52,8 @@ public class HostApplicationServiceImpl implements HostApplicationService {
     @Override
     @Transactional(readOnly = true)
     public List<BookingResponse> listBookings(Long venueId, LocalDate date) {
-        venueRepository.findByIdOrThrow(venueId);
-        return bookingRepository.findAllForVenue(venueId, date.atStartOfDay(), date.plusDays(1).atStartOfDay())
-                .stream()
+        entityLookup.venue(venueId);
+        return bookingRepository.findAllForVenueOn(venueId, date).stream()
                 .map(BookingResponse::from)
                 .toList();
     }
@@ -61,7 +61,7 @@ public class HostApplicationServiceImpl implements HostApplicationService {
     @Override
     @Transactional
     public void deleteBooking(Long bookingId) {
-        bookingRepository.delete(bookingRepository.findByIdOrThrow(bookingId));
+        bookingRepository.delete(entityLookup.booking(bookingId));
     }
 
     private Set<Sport> findSports(List<Long> sportIds) {

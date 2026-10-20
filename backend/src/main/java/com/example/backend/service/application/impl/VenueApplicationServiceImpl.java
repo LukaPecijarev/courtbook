@@ -5,12 +5,10 @@ import com.example.backend.dto.VenueResponse;
 import com.example.backend.model.Sport;
 import com.example.backend.model.Venue;
 import com.example.backend.repository.BookingRepository;
-import com.example.backend.repository.SportRepository;
 import com.example.backend.repository.VenueRepository;
 import com.example.backend.service.application.VenueApplicationService;
 import com.example.backend.service.domain.AvailabilityCalculator;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,8 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class VenueApplicationServiceImpl implements VenueApplicationService {
 
     private final VenueRepository venueRepository;
-    private final SportRepository sportRepository;
     private final BookingRepository bookingRepository;
+    private final EntityLookup entityLookup;
 
     @Override
     @Transactional(readOnly = true)
@@ -35,11 +33,11 @@ public class VenueApplicationServiceImpl implements VenueApplicationService {
     @Override
     @Transactional(readOnly = true)
     public List<SlotResponse> getAvailability(Long venueId, LocalDate date, Long sportId) {
-        Venue venue = venueRepository.findByIdOrThrow(venueId);
-        Sport sport = sportRepository.findByIdOrThrow(sportId);
+        Venue venue = entityLookup.venue(venueId);
+        Sport sport = entityLookup.sport(sportId);
         venue.requireOffers(sport);
         return AvailabilityCalculator.slots(date, venue.getOpeningTime(), venue.getClosingTime(),
-                        findBookedStarts(venueId, date)).stream()
+                        bookingRepository.findStartTimesOn(venueId, date)).stream()
                 .map(slot -> new SlotResponse(slot.startAt(), slot.available()))
                 .toList();
     }
@@ -48,11 +46,7 @@ public class VenueApplicationServiceImpl implements VenueApplicationService {
         if (sportId == null) {
             return venueRepository.findAllByOrderByNameAsc();
         }
-        sportRepository.findByIdOrThrow(sportId);
+        entityLookup.sport(sportId);
         return venueRepository.findAllOfferingSport(sportId);
-    }
-
-    private List<LocalDateTime> findBookedStarts(Long venueId, LocalDate date) {
-        return bookingRepository.findStartTimes(venueId, date.atStartOfDay(), date.plusDays(1).atStartOfDay());
     }
 }

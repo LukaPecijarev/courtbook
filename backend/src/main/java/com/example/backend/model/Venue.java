@@ -1,6 +1,5 @@
 package com.example.backend.model;
 
-import com.example.backend.service.domain.AvailabilityCalculator;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,11 +13,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import lombok.AccessLevel;
@@ -96,9 +92,5 @@ public class Venue {
         if (!offers(sport)) {
             throw new IllegalArgumentException("Venue does not offer sport: " + sport.getName());
         }
-    }
-
-    public List<LocalDateTime> slotStartsOn(LocalDate date) {
-        return AvailabilityCalculator.slotStarts(date, openingTime, closingTime);
     }
 }

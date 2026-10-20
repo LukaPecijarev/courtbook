@@ -1,7 +1,7 @@
 package com.example.backend.repository;
 
-import com.example.backend.exception.NotFoundException;
 import com.example.backend.model.Booking;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,7 +27,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                   @Param("from") LocalDateTime from,
                                   @Param("to") LocalDateTime to);
 
-    default Booking findByIdOrThrow(Long id) {
-        return findById(id).orElseThrow(() -> new NotFoundException("Booking not found: " + id));
+    default List<LocalDateTime> findStartTimesOn(Long venueId, LocalDate date) {
+        return findStartTimes(venueId, date.atStartOfDay(), date.plusDays(1).atStartOfDay());
+    }
+
+    default List<Booking> findAllForVenueOn(Long venueId, LocalDate date) {
+        return findAllForVenue(venueId, date.atStartOfDay(), date.plusDays(1).atStartOfDay());
     }
 }

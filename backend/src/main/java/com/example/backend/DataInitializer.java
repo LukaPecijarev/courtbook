@@ -12,7 +12,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-// Seeds fictional demo data on first start; skipped once any sport exists.
 @Component
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
@@ -23,15 +22,12 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        if (sportRepository.count() > 0) {
-            return;
-        }
-        Sport tennis = sportRepository.save(new Sport("Tennis", "#C0CA33", null));
-        Sport basketball = sportRepository.save(new Sport("Basketball", "#F57C00", null));
-        Sport football = sportRepository.save(new Sport("Football", "#2E7D32", null));
-        Sport padel = sportRepository.save(new Sport("Padel", "#1E88E5", null));
+        Sport tennis = sport("Tennis", "#C0CA33");
+        Sport basketball = sport("Basketball", "#F57C00");
+        Sport football = sport("Football", "#2E7D32");
+        Sport padel = sport("Padel", "#1E88E5");
 
-        venueRepository.saveAll(List.of(
+        seedVenues(List.of(
                 venue("Vardar Riverside Courts", "Riverside Promenade 12",
                         "Clay tennis and padel courts along the river.", "1200", tennis, padel),
                 venue("Vodno Hill Sports Park", "Hillside Road 4",
@@ -43,7 +39,20 @@ public class DataInitializer implements CommandLineRunner {
                 venue("Aerodrom Padel Club", "Runway Boulevard 33",
                         "Two covered panoramic padel courts.", "1800", padel),
                 venue("Centar Multisport Hall", "Central Square 2",
-                        "Indoor hall with a convertible court.", "2000", basketball, football, padel)));
+                        "Indoor hall with a convertible court.", "2000", basketball, football, padel),
+                venue("Kisela Voda Tennis Club", "Parkside Lane 15",
+                        "Three outdoor hard courts with evening floodlights.", "1400", tennis)));
+    }
+
+    private Sport sport(String name, String color) {
+        return sportRepository.findByName(name)
+                .orElseGet(() -> sportRepository.save(new Sport(name, color, null)));
+    }
+
+    private void seedVenues(List<Venue> venues) {
+        venues.stream()
+                .filter(venue -> !venueRepository.existsByName(venue.getName()))
+                .forEach(venueRepository::save);
     }
 
     private static Venue venue(String name, String address, String description, String pricePerHour,

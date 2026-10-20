@@ -9,7 +9,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.time.LocalDateTime;
 
-// Sport and customer fields are null for host-blocked slots.
 public record BookingResponse(
         @NotNull Long id,
         @NotNull BookingType type,

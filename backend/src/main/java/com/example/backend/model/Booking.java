@@ -1,5 +1,6 @@
 package com.example.backend.model;
 
+import com.example.backend.service.domain.SlotPolicy;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,13 +16,11 @@ import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-// Customer bookings and host-blocked slots share one table, so this constraint prevents double bookings for both.
 @Entity
 @Table(
         name = "bookings",
@@ -29,8 +28,6 @@ import org.hibernate.annotations.CreationTimestamp;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Booking {
-
-    public static final int SLOT_MINUTES = 60;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,12 +65,12 @@ public class Booking {
 
     private Booking(BookingType type, Venue venue, Sport sport, LocalDateTime startAt,
                     String customerName, String customerEmail) {
-        requireValidSlot(venue, startAt);
+        SlotPolicy.requireValidSlot(startAt, venue.getOpeningTime(), venue.getClosingTime());
         this.type = type;
         this.venue = venue;
         this.sport = sport;
         this.startAt = startAt;
-        this.durationMinutes = SLOT_MINUTES;
+        this.durationMinutes = SlotPolicy.SLOT_MINUTES;
         this.customerName = customerName;
         this.customerEmail = customerEmail;
     }
@@ -86,14 +83,5 @@ public class Booking {
 
     public static Booking blocked(Venue venue, LocalDateTime startAt) {
         return new Booking(BookingType.BLOCKED, venue, null, startAt, null, null);
-    }
-
-    private static void requireValidSlot(Venue venue, LocalDateTime startAt) {
-        if (!startAt.equals(startAt.truncatedTo(ChronoUnit.HOURS))) {
-            throw new IllegalArgumentException("Slot must start on the hour: " + startAt);
-        }
-        if (!venue.isOpenFor(startAt, SLOT_MINUTES)) {
-            throw new IllegalArgumentException("Slot is outside opening hours: " + startAt);
-        }
     }
 }

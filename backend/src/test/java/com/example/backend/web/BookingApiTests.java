@@ -9,6 +9,7 @@ import com.example.backend.model.Sport;
 import com.example.backend.model.Venue;
 import com.example.backend.repository.SportRepository;
 import com.example.backend.repository.VenueRepository;
+import com.example.backend.web.interceptor.HostTokenInterceptor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-// Runs against the seeded H2 data; each test rolls back.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional

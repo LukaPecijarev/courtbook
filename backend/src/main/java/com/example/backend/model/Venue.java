@@ -1,5 +1,6 @@
 package com.example.backend.model;
 
+import com.example.backend.service.domain.AvailabilityCalculator;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,7 +17,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -98,20 +98,7 @@ public class Venue {
         }
     }
 
-    public boolean isOpenFor(LocalDateTime start, int durationMinutes) {
-        LocalDateTime end = start.plusMinutes(durationMinutes);
-        return end.toLocalDate().equals(start.toLocalDate())
-                && !start.toLocalTime().isBefore(openingTime)
-                && !end.toLocalTime().isAfter(closingTime);
-    }
-
     public List<LocalDateTime> slotStartsOn(LocalDate date) {
-        List<LocalDateTime> starts = new ArrayList<>();
-        for (LocalDateTime start = date.atTime(openingTime);
-             isOpenFor(start, Booking.SLOT_MINUTES);
-             start = start.plusMinutes(Booking.SLOT_MINUTES)) {
-            starts.add(start);
-        }
-        return starts;
+        return AvailabilityCalculator.slotStarts(date, openingTime, closingTime);
     }
 }

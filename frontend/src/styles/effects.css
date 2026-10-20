@@ -1,0 +1,88 @@
+.reveal {
+  opacity: 0;
+  transition: opacity 900ms ease;
+}
+
+.reveal > * {
+  transform: translateY(var(--reveal-rise, 48px));
+  transition: transform 900ms var(--ease-out);
+}
+
+.reveal[data-state='visible'] {
+  opacity: 1;
+}
+
+.reveal[data-state='visible'] > * {
+  transform: none;
+}
+
+.zoom-media {
+  position: relative;
+  display: block;
+  overflow: hidden;
+}
+
+.zoom-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 700ms ease;
+}
+
+.zoom-media:hover img,
+.zoom-media:focus-visible img {
+  transform: scale(1.07);
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background: rgba(244, 239, 230, 0.05);
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 200%;
+  background: linear-gradient(90deg, transparent 0%, rgba(244, 239, 230, 0.06) 50%, transparent 100%);
+  animation: skeleton-shimmer 1400ms ease-in-out infinite;
+}
+
+.skeleton--line {
+  height: 14px;
+  border-radius: 999px;
+}
+
+.skeleton--short {
+  width: 45%;
+}
+
+@keyframes skeleton-shimmer {
+  from {
+    transform: translateX(-75%);
+  }
+  to {
+    transform: translateX(25%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .zoom-media img {
+    transition: none;
+  }
+
+  .skeleton::after {
+    animation: none;
+  }
+}

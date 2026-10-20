@@ -1,0 +1,27 @@
+@import '@fontsource/cormorant-garamond/500.css';
+@import '@fontsource/oswald/700.css';
+@import '@fontsource-variable/inter';
+
+.theme {
+  --landing-bg: #0b0c0f;
+  --landing-surface: #111318;
+  --landing-text: #b9b4aa;
+  --landing-text-strong: #f4efe6;
+  --landing-text-muted: #7a766f;
+  --landing-line: rgba(244, 239, 230, 0.12);
+  --landing-error: #ff8a80;
+  --chip-base: #0f1115;
+  --accent-ink: #0b0c0e;
+  --chip-disabled: #2a2d33;
+  --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-condensed: 'Oswald', 'Arial Narrow', sans-serif;
+  --font-body: 'Inter Variable', system-ui, 'Segoe UI', sans-serif;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  min-height: 100svh;
+  overflow-x: clip;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--landing-text);
+  background: var(--landing-bg);
+}

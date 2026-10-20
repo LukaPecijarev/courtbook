@@ -1,0 +1,55 @@
+.slot-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.slot-grid__period {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.slot-grid__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--landing-text-muted);
+}
+
+.slot-grid__slots {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.slot-grid__slots > * {
+  min-width: 0;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.slot-grid__slots .chip {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.slot-grid__message--error {
+  color: var(--landing-error);
+}
+
+@media (min-width: 768px) {
+  .slot-grid__period {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: center;
+    gap: 16px;
+  }
+
+  .slot-grid__slots {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}

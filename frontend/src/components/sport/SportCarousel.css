@@ -1,0 +1,146 @@
+.sport-carousel {
+  position: relative;
+}
+
+.sport-carousel__viewport {
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.sport-carousel__track {
+  --slide: 74%;
+  --gap: 12px;
+
+  display: flex;
+  gap: var(--gap);
+  transform: translateX(
+    calc((100% - var(--slide)) / 2 - (var(--reach) + var(--shift)) * (var(--slide) + var(--gap)))
+  );
+}
+
+.sport-carousel__track[data-state='sliding'] {
+  transition: transform 500ms var(--ease-out);
+}
+
+.sport-carousel__slide {
+  position: relative;
+  container-type: inline-size;
+  display: grid;
+  flex: 0 0 var(--slide);
+  place-items: center;
+  height: clamp(280px, 51vh, 560px);
+  border-radius: 24px;
+  overflow: hidden;
+  background:
+    linear-gradient(to bottom, rgba(11, 12, 15, 0.35), rgba(11, 12, 15, 0.8)),
+    var(--slide-image) center / cover no-repeat;
+}
+
+.sport-carousel__slide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #0b0c0f;
+  opacity: 0.55;
+  pointer-events: none;
+  transition: opacity 500ms var(--ease-out);
+}
+
+.sport-carousel__slide[data-state='current']::after {
+  opacity: 0;
+}
+
+.sport-carousel__slide:not([data-state='current']):hover::after {
+  opacity: 0.3;
+}
+
+.sport-carousel__title {
+  position: relative;
+  z-index: 1;
+  padding: 0 8px;
+  font-family: var(--font-condensed);
+  font-size: clamp(2.5rem, 17cqi, 10rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--landing-text-strong);
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity 500ms var(--ease-out);
+}
+
+.sport-carousel__slide[data-state='current'] .sport-carousel__title {
+  opacity: 1;
+}
+
+.sport-carousel__arrow {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--landing-line);
+  border-radius: 50%;
+  background: rgba(11, 12, 15, 0.55);
+  transform: translateY(-50%);
+  transition:
+    background-color 300ms ease,
+    opacity 300ms ease;
+}
+
+.sport-carousel:not(:hover):not(:focus-within) .sport-carousel__arrow {
+  opacity: 0.45;
+}
+
+.sport-carousel__arrow:hover,
+.sport-carousel__arrow:focus-visible {
+  background: rgba(11, 12, 15, 0.85);
+}
+
+.sport-carousel__arrow:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.sport-carousel__arrow--previous {
+  left: 4px;
+}
+
+.sport-carousel__arrow--next {
+  right: 4px;
+}
+
+.sport-carousel__arrow svg {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 4px var(--accent));
+  transition: stroke 300ms ease;
+}
+
+@media (min-width: 768px) {
+  .sport-carousel__arrow {
+    width: 56px;
+    height: 56px;
+  }
+
+  .sport-carousel__arrow--previous {
+    left: 24px;
+  }
+
+  .sport-carousel__arrow--next {
+    right: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sport-carousel__track[data-state='sliding'],
+  .sport-carousel__slide,
+  .sport-carousel__title {
+    transition: none;
+  }
+}

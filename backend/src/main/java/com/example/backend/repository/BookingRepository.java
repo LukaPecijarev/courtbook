@@ -1,7 +1,7 @@
 package com.example.backend.repository;
 
+import com.example.backend.exception.NotFoundException;
 import com.example.backend.model.Booking;
-import com.example.backend.model.exception.NotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,7 +19,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                        @Param("from") LocalDateTime from,
                                        @Param("to") LocalDateTime to);
 
-    // Fetches venue and sport in the same query so mapping to DTOs needs no extra loads.
     @Query("""
             select b from Booking b join fetch b.venue left join fetch b.sport
             where b.venue.id = :venueId and b.startAt >= :from and b.startAt < :to

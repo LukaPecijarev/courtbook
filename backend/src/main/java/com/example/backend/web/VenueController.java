@@ -2,7 +2,7 @@ package com.example.backend.web;
 
 import com.example.backend.dto.SlotResponse;
 import com.example.backend.dto.VenueResponse;
-import com.example.backend.service.application.VenueService;
+import com.example.backend.service.application.VenueApplicationService;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class VenueController {
 
-    private final VenueService venueService;
+    private final VenueApplicationService venueApplicationService;
 
     @GetMapping
     public List<VenueResponse> listVenues(@RequestParam(required = false) Long sportId) {
-        return venueService.listVenues(sportId);
+        return venueApplicationService.listVenues(sportId);
     }
 
     @GetMapping("/{id}/availability")
@@ -30,6 +30,6 @@ public class VenueController {
             @PathVariable Long id,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam Long sportId) {
-        return venueService.getAvailability(id, date, sportId);
+        return venueApplicationService.getAvailability(id, date, sportId);
     }
 }

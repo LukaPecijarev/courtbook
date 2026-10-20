@@ -1,0 +1,44 @@
+.venue-page-skeleton__hero {
+  height: clamp(260px, 46vh, 520px);
+  border-radius: 0;
+}
+
+.venue-page-skeleton__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 932px;
+  margin: 32px auto 0;
+  padding: 0 16px;
+}
+
+.venue-page-skeleton__title {
+  width: 70%;
+  height: 40px;
+}
+
+.venue-page-skeleton__days {
+  display: flex;
+  gap: 10px;
+  overflow: hidden;
+  margin-top: 16px;
+}
+
+.venue-page-skeleton__day {
+  flex: 0 0 64px;
+  height: 72px;
+  border-radius: 18px;
+}
+
+.venue-page-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 64px 16px;
+  text-align: center;
+}
+
+.venue-page-message__error {
+  color: var(--landing-error);
+}

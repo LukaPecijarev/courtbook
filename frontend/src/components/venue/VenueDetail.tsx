@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import type { VenueResponse } from '../../api/venues'
 import type { SportTheme } from '../../config/sportThemes'
-import { detailsForVenue } from '../../content/venueDetails'
 import { venuePage } from '../../content/venuePage'
 import { useAvailability } from '../../hooks/useAvailability'
 import { accentStyle } from '../../utils/color'
@@ -34,7 +33,6 @@ export function VenueDetail({ venue, sport, sportId, image }: VenueDetailProps) 
   const [bookingSlot, setBookingSlot] = useState<string | null>(null)
   const [slotsVersion, setSlotsVersion] = useState(0)
   const slots = useAvailability(venue.id, date, sportId, slotsVersion)
-  const details = detailsForVenue(venue.id)
 
   const selectDate = (isoDate: string) => {
     setDate(isoDate)
@@ -60,18 +58,18 @@ export function VenueDetail({ venue, sport, sportId, image }: VenueDetailProps) 
             <Reveal>
               <header className="venue-page__heading" data-cursor-accent data-rise>
                 <p className="venue-page__tagline">
-                  {sport.label} {details.surface}
+                  {sport.label} {venue.surface ?? venuePage.defaultSurface}
                 </p>
                 <div className="venue-page__title-row">
                   <h1 className="venue-page__name">{venue.name}</h1>
-                  {details.badge && <Tag tone="outline">{details.badge}</Tag>}
+                  {venue.badge && <Tag tone="outline">{venue.badge}</Tag>}
                 </div>
                 <p className="venue-page__location">
                   {venue.address}, {venue.city}
                 </p>
-                {details.amenities.length > 0 && (
+                {venue.amenities.length > 0 && (
                   <ul className="venue-page__amenities" aria-label={venuePage.amenities}>
-                    {details.amenities.map((amenity) => (
+                    {venue.amenities.map((amenity) => (
                       <li key={amenity}>
                         <Tag>{amenity}</Tag>
                       </li>

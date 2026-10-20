@@ -11,6 +11,9 @@ export interface VenueResponse {
   openingTime: string
   closingTime: string
   sports: SportResponse[]
+  surface: string | null
+  badge: string | null
+  amenities: string[]
 }
 
 export interface SlotResponse {

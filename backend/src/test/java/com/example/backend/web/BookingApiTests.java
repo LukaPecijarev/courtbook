@@ -126,6 +126,19 @@ class BookingApiTests {
     }
 
     @Test
+    void venueByIdReturnsSeededDetails() throws Exception {
+        Venue vardar = venueRepository.findFirstByName("Vardar Riverside Courts").orElseThrow();
+
+        mockMvc.perform(get("/api/venues/{id}", vardar.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.surface").value("Clay"))
+                .andExpect(jsonPath("$.badge").value("Top 10"))
+                .andExpect(jsonPath("$.amenities.length()").value(2))
+                .andExpect(jsonPath("$.amenities[0]").value("Changing Room"))
+                .andExpect(jsonPath("$.amenities[1]").value("Free Parking"));
+    }
+
+    @Test
     void unknownVenueReturns404() throws Exception {
         mockMvc.perform(get("/api/venues/{id}", 999_999))
                 .andExpect(status().isNotFound())

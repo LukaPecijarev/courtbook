@@ -1,6 +1,8 @@
 package com.example.backend.model;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,9 +14,12 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import lombok.AccessLevel;
@@ -69,8 +74,22 @@ public class Venue {
             inverseJoinColumns = @JoinColumn(name = "sport_id"))
     private Set<Sport> sports = new HashSet<>();
 
+    @Size(max = 50)
+    @Column(length = 50)
+    private String surface;
+
+    @Size(max = 30)
+    @Column(length = 30)
+    private String badge;
+
+    @ElementCollection
+    @CollectionTable(name = "venue_amenities", joinColumns = @JoinColumn(name = "venue_id"))
+    @Column(name = "amenity", nullable = false)
+    private List<String> amenities = new ArrayList<>();
+
     public Venue(String name, String city, String address, String description, BigDecimal pricePerHour,
-                 LocalTime openingTime, LocalTime closingTime, Set<Sport> sports) {
+                 LocalTime openingTime, LocalTime closingTime, Set<Sport> sports,
+                 String surface, String badge, List<String> amenities) {
         this.name = name;
         this.city = city;
         this.address = address;
@@ -82,6 +101,20 @@ public class Venue {
             throw new IllegalArgumentException("Closing time must be after opening time");
         }
         this.sports = new HashSet<>(sports);
+        updateDetails(surface, badge, amenities);
+    }
+
+    public boolean updateDetails(String surface, String badge, List<String> amenities) {
+        List<String> newAmenities = Objects.requireNonNullElse(amenities, List.of());
+        if (Objects.equals(this.surface, surface) && Objects.equals(this.badge, badge)
+                && this.amenities.equals(newAmenities)) {
+            return false;
+        }
+        this.surface = surface;
+        this.badge = badge;
+        this.amenities.clear();
+        this.amenities.addAll(newAmenities);
+        return true;
     }
 
     public boolean offers(Sport sport) {

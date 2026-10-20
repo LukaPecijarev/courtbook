@@ -36,7 +36,7 @@ public class HostApplicationServiceImpl implements HostApplicationService {
     public VenueResponse createVenue(CreateVenueRequest request) {
         Venue venue = new Venue(request.name(), request.city(), request.address(), request.description(),
                 request.pricePerHour(), LocalTime.of(request.openingHour(), 0), LocalTime.of(request.closingHour(), 0),
-                findSports(request.sportIds()));
+                findSports(request.sportIds()), null, null, List.of());
         return VenueResponse.from(venueRepository.save(venue));
     }
 

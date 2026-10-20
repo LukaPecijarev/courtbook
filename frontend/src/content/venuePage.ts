@@ -1,6 +1,7 @@
 export const venuePage = {
   backToSport: 'Back to',
   amenities: 'Amenities',
+  defaultSurface: 'Ground',
   dateTitle: 'Select a reservation date',
   slotTitle: 'Select a time slot',
   morning: 'Morning',

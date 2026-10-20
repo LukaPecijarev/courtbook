@@ -2,6 +2,7 @@ package com.example.backend.repository;
 
 import com.example.backend.model.Venue;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,5 +19,5 @@ public interface VenueRepository extends JpaRepository<Venue, Long> {
             order by v.name""")
     List<Venue> findAllOfferingSport(@Param("sportId") Long sportId);
 
-    boolean existsByName(String name);
+    Optional<Venue> findFirstByName(String name);
 }

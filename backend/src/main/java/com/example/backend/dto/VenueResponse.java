@@ -15,7 +15,10 @@ public record VenueResponse(
         BigDecimal pricePerHour,
         LocalTime openingTime,
         LocalTime closingTime,
-        List<SportResponse> sports) {
+        List<SportResponse> sports,
+        String surface,
+        String badge,
+        List<String> amenities) {
 
     public static VenueResponse from(Venue venue) {
         List<SportResponse> sports = venue.getSports().stream()
@@ -24,6 +27,6 @@ public record VenueResponse(
                 .toList();
         return new VenueResponse(venue.getId(), venue.getName(), venue.getCity(), venue.getAddress(),
                 venue.getDescription(), venue.getPricePerHour(), venue.getOpeningTime(), venue.getClosingTime(),
-                sports);
+                sports, venue.getSurface(), venue.getBadge(), List.copyOf(venue.getAmenities()));
     }
 }

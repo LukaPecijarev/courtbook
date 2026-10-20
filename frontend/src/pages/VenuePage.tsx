@@ -8,7 +8,7 @@ import { venuePage } from '../content/venuePage'
 import { useVenue } from '../hooks/useVenue'
 import { DEFAULT_SPORT_PATH } from '../utils/paths'
 import { isVenuePreview } from '../utils/venueTransition'
-import './VenuePage.css'
+import '../styles/venue.css'
 
 interface SportOffer {
   sport: SportTheme

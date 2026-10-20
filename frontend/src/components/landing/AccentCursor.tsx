@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react'
-import './AccentCursor.css'
 
 const ACCENT_SELECTOR = '[data-cursor-accent]'
 const NEUTRAL_SELECTOR = '[data-cursor-neutral]'

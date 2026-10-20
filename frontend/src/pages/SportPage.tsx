@@ -7,6 +7,7 @@ import { carousel } from '../content/sportPage'
 import { useSportCarousel } from '../hooks/useSportCarousel'
 import { accentStyle } from '../utils/color'
 import { preloadImages } from '../utils/preload'
+import '../styles/sport.css'
 
 export function SportPage() {
   const { current: theme } = useSportCarousel()

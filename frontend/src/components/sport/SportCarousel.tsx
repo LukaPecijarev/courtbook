@@ -3,7 +3,6 @@ import { neighbourSport, sportDistance, sportThemes, type SportTheme } from '../
 import { carousel } from '../../content/sportPage'
 import { useSportCarousel, type Direction } from '../../hooks/useSportCarousel'
 import { prefersReducedMotion } from '../../utils/ui'
-import './SportCarousel.css'
 
 const REACH = Math.floor(sportThemes.length / 2) + 1
 const OFFSETS = Array.from({ length: REACH * 2 + 1 }, (_, index) => index - REACH)

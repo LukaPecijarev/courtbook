@@ -3,7 +3,6 @@ import type { AsyncState } from '../../hooks/useAsync'
 import type { AvailabilitySlot } from '../../hooks/useAvailability'
 import { formatTime } from '../../utils/date'
 import { Chip } from '../ui/Chip'
-import './SlotGrid.css'
 
 const SKELETON_COUNT = 12
 

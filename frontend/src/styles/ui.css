@@ -246,7 +246,66 @@
   }
 }
 
-.sport-page__missing {
-  padding: 64px 16px;
-  text-align: center;
+.accent-cursor {
+  display: none;
+}
+
+@media (pointer: fine) {
+  html:has(.accent-cursor),
+  html:has(.accent-cursor) * {
+    cursor: none;
+  }
+
+  html:has(.accent-cursor) :is(input, textarea, [contenteditable]) {
+    cursor: text;
+  }
+
+  .accent-cursor {
+    --accent: var(--landing-text-strong);
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    display: block;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+
+  .accent-cursor.is-visible {
+    opacity: 1;
+  }
+
+  .accent-cursor__shape {
+    position: absolute;
+    overflow: visible;
+    filter: drop-shadow(0 0 4px var(--accent));
+    transition:
+      opacity 150ms ease,
+      filter 300ms ease;
+  }
+
+  .accent-cursor__shape path {
+    fill: #ffffff;
+    stroke: var(--accent);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+    transition: stroke 300ms ease;
+  }
+
+  .accent-cursor__arrow {
+    top: -1.25px;
+    left: -1.25px;
+  }
+
+  .accent-cursor__hand {
+    top: -1.25px;
+    left: -6.5px;
+  }
+
+  .accent-cursor[data-state='arrow'] .accent-cursor__hand,
+  .accent-cursor[data-state='pointer'] .accent-cursor__arrow {
+    opacity: 0;
+  }
 }

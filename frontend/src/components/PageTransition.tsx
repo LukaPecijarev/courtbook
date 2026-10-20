@@ -1,7 +1,6 @@
 import { useLayoutEffect, useState, type ReactNode } from 'react'
 import { useLocation, useNavigationType, useViewTransitionState } from 'react-router-dom'
 import { pageKey } from '../utils/paths'
-import './PageTransition.css'
 
 type Entry = 'fade' | 'transition'
 

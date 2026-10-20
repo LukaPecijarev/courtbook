@@ -7,7 +7,6 @@ import { formatPricePerHour } from '../../utils/ui'
 import { Button } from '../ui/Button'
 import { Card } from '../ui/Card'
 import { SectionTitle } from '../ui/SectionTitle'
-import './BookingDialog.css'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const MAX_NAME_LENGTH = 100

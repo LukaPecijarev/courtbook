@@ -1,6 +1,5 @@
 import { formatMonthRange, formatWeekday, toIsoDate } from '../../utils/date'
 import { Chip } from '../ui/Chip'
-import './DayPicker.css'
 
 interface DayPickerProps {
   days: Date[]

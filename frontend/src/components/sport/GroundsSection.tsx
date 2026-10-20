@@ -6,7 +6,6 @@ import { useSportVenues, type SportVenues } from '../../hooks/useSportVenues'
 import { SportBackdrop } from '../SportBackdrop'
 import { SectionTitle } from '../ui/SectionTitle'
 import { VenueCard, VenueCardSkeleton } from './VenueCard'
-import './GroundsSection.css'
 
 const SKELETON_COUNT = 3
 

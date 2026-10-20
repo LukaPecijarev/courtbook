@@ -15,7 +15,6 @@ import { BookingBar } from './BookingBar'
 import { BookingDialog } from './BookingDialog'
 import { DayPicker } from './DayPicker'
 import { SlotGrid } from './SlotGrid'
-import './VenueDetail.css'
 
 const DAYS_AHEAD = 7
 

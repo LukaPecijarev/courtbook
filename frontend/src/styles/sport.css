@@ -1,3 +1,104 @@
+.venue-card {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.venue-card__media {
+  aspect-ratio: 16 / 10;
+  border-radius: 23px 23px 0 0;
+}
+
+.venue-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.venue-card__name {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--landing-text-strong);
+}
+
+.venue-card__muted {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--landing-text-muted);
+}
+
+.venue-card__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+@media (min-width: 768px) {
+  .venue-card {
+    grid-template-columns: 2fr 3fr;
+  }
+
+  .venue-card__media {
+    aspect-ratio: auto;
+    min-height: 240px;
+    border-radius: 23px 0 0 23px;
+  }
+
+  .venue-card__body {
+    padding: 28px;
+  }
+}
+
+.grounds {
+  position: relative;
+  isolation: isolate;
+  margin-top: 40px;
+}
+
+.grounds__inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 32px;
+  max-width: 932px;
+  margin: 0 auto;
+  padding: 56px 16px 96px;
+  font-size: 1.05rem;
+}
+
+.grounds__list {
+  display: grid;
+  gap: 20px;
+  font-size: 1rem;
+  transition: opacity 300ms ease;
+}
+
+.grounds__list[data-state='stale'] {
+  opacity: 0.5;
+}
+
+.grounds__error {
+  color: var(--landing-error);
+}
+
+@media (min-width: 640px) {
+  .grounds__inner {
+    padding: 72px 24px 120px;
+  }
+
+  .grounds__list {
+    gap: 28px;
+  }
+}
+
 .sport-carousel {
   position: relative;
 }
@@ -143,4 +244,9 @@
   .sport-carousel__title {
     transition: none;
   }
+}
+
+.sport-page__missing {
+  padding: 64px 16px;
+  text-align: center;
 }

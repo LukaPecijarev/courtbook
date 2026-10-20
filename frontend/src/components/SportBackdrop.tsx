@@ -1,5 +1,4 @@
 import { useEffect, useState, type CSSProperties } from 'react'
-import './SportBackdrop.css'
 
 function useCrossfadeLayers(image: string) {
   const [layers, setLayers] = useState<string[]>([image])

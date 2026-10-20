@@ -3,7 +3,6 @@ import { Reveal } from '../Reveal'
 import { Button } from '../ui/Button'
 import { SectionTitle } from '../ui/SectionTitle'
 import { LandingFooter } from './LandingFooter'
-import './Finale.css'
 
 const RESERVE_ACCENT = '#F4EFE6'
 

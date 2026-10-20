@@ -3,7 +3,6 @@ import { formatLongDate, formatTime } from '../../utils/date'
 import { Button } from '../ui/Button'
 import { Card } from '../ui/Card'
 import { Price } from '../ui/Price'
-import './BookingBar.css'
 
 interface BookingBarProps {
   pricePerHour: number

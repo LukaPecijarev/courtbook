@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { sectionLinks } from '../../content/landing'
 import { SectionLink } from '../SectionLink'
-import './LandingFooter.css'
 
 const CURRENT_YEAR = new Date().getFullYear()
 

@@ -8,7 +8,6 @@ import { sportPath } from '../utils/paths'
 import { isPlainClick } from '../utils/ui'
 import { SportIcon } from './SportIcon'
 import { Card } from './ui/Card'
-import './TopBar.css'
 
 interface TopBarProps {
   sport?: SportTheme

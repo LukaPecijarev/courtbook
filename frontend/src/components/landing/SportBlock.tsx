@@ -6,7 +6,6 @@ import { accentStyle } from '../../utils/color'
 import { sportPath } from '../../utils/paths'
 import { Button } from '../ui/Button'
 import { SectionTitle } from '../ui/SectionTitle'
-import './SportBlock.css'
 
 interface SportBlockProps {
   sport: LandingSport

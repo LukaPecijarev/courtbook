@@ -11,7 +11,6 @@ import { venueTransitionName, type VenuePreview } from '../../utils/venueTransit
 import { Button } from '../ui/Button'
 import { Card } from '../ui/Card'
 import { Price } from '../ui/Price'
-import './VenueCard.css'
 
 const DECODE_WAIT_MS = 150
 

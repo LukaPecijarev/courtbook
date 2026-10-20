@@ -1,6 +1,5 @@
 import type { CSSProperties } from 'react'
 import { hero } from '../../content/landing'
-import './Hero.css'
 
 export function Hero() {
   const style = { '--hero-image': `url(${hero.image})` } as CSSProperties

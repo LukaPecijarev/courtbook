@@ -8,6 +8,15 @@ function readAccent(element: Element): string {
   return getComputedStyle(element).getPropertyValue('--accent')
 }
 
+/**
+ * Modal dialogs live in the browser's top layer, above any z-index. The cursor is a manual popover, so it
+ * lives there too; re-showing it moves it above the most recently opened dialog.
+ */
+function raiseToTopLayer(cursor: HTMLElement) {
+  if (cursor.matches(':popover-open')) cursor.hidePopover()
+  cursor.showPopover()
+}
+
 function cursorStateFor(target: EventTarget | null): 'pointer' | 'arrow' {
   return target instanceof Element && target.closest(POINTER_SELECTOR) ? 'pointer' : 'arrow'
 }
@@ -19,6 +28,7 @@ export function AccentCursor() {
     const cursor = cursorRef.current
     if (!cursor || !window.matchMedia('(pointer: fine)').matches) return
 
+    raiseToTopLayer(cursor)
     const pointer = { x: 0, y: 0 }
     const blocksInView: Element[] = []
     let frame = 0
@@ -72,8 +82,11 @@ export function AccentCursor() {
     const observeAccentElements = () =>
       document.querySelectorAll(ACCENT_SELECTOR).forEach((element) => observer.observe(element))
     observeAccentElements()
-    const mutations = new MutationObserver(observeAccentElements)
-    mutations.observe(document.body, { childList: true, subtree: true })
+    const mutations = new MutationObserver((records) => {
+      observeAccentElements()
+      if (records.some((record) => record.type === 'attributes')) raiseToTopLayer(cursor)
+    })
+    mutations.observe(document.body, { childList: true, subtree: true, attributeFilter: ['open'] })
 
     const root = document.documentElement
     window.addEventListener('mousemove', handlePointerPosition)
@@ -86,6 +99,7 @@ export function AccentCursor() {
     return () => {
       observer.disconnect()
       mutations.disconnect()
+      if (cursor.matches(':popover-open')) cursor.hidePopover()
       cancelAnimationFrame(frame)
       window.removeEventListener('mousemove', handlePointerPosition)
       window.removeEventListener('scroll', scheduleRender)
@@ -97,7 +111,7 @@ export function AccentCursor() {
   }, [])
 
   return (
-    <div ref={cursorRef} className="accent-cursor" data-state="arrow" aria-hidden="true">
+    <div ref={cursorRef} className="accent-cursor" data-state="arrow" popover="manual" aria-hidden="true">
       <svg className="accent-cursor__shape accent-cursor__arrow" viewBox="0 0 16 22" width="16" height="22">
         <path d="M1.25 1.25v16.9l4.2-4 2.8 6.2 2.8-1.2-2.7-6h5.6z" />
       </svg>

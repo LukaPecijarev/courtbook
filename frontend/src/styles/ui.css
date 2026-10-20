@@ -263,11 +263,15 @@
   .accent-cursor {
     --accent: var(--landing-text-strong);
 
+    /* Undo the popover defaults: the cursor is a bare fixed layer in the top-left corner. */
     position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
+    inset: 0 auto auto 0;
     display: block;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    overflow: visible;
     pointer-events: none;
     opacity: 0;
     transition: opacity 200ms ease;

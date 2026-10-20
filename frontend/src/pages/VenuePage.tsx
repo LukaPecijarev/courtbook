@@ -48,7 +48,7 @@ export function VenuePage() {
   const offer = venue && pickSport(venue, searchParams.get('sport'))
   if (!venue || !offer) return <VenuePageMessage message={venuePage.notFound} />
 
-  const image = preview?.image ?? venueImageFor(offer.sport, venue.id)
+  const image = preview?.image ?? venue.imageUrl ?? venueImageFor(offer.sport, venue.id)
   return (
     <VenueDetail
       key={`${venue.id}:${offer.sport.id}`}

@@ -16,22 +16,36 @@ async function readErrorMessage(response: Response): Promise<string> {
   }
 }
 
-async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
+async function request(path: string, init?: RequestInit): Promise<Response> {
   const response = await fetch(`/api${path}`, init)
   if (!response.ok) {
     throw new ApiError(response.status, await readErrorMessage(response))
   }
+  return response
+}
+
+function jsonInit(method: string, body: unknown, headers?: HeadersInit): RequestInit {
+  return {
+    method,
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(body),
+  }
+}
+
+export async function getJson<T>(path: string, signal?: AbortSignal, headers?: HeadersInit): Promise<T> {
+  const response = await request(path, { signal, headers })
   return response.json() as Promise<T>
 }
 
-export function getJson<T>(path: string, signal?: AbortSignal): Promise<T> {
-  return requestJson<T>(path, { signal })
+export async function sendJson<T>(method: 'POST' | 'PUT', path: string, body: unknown, headers?: HeadersInit): Promise<T> {
+  const response = await request(path, jsonInit(method, body, headers))
+  return response.json() as Promise<T>
 }
 
 export function postJson<T>(path: string, body: unknown): Promise<T> {
-  return requestJson<T>(path, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  })
+  return sendJson<T>('POST', path, body)
+}
+
+export async function sendWithoutBody(method: 'POST' | 'DELETE', path: string, headers?: HeadersInit): Promise<void> {
+  await request(path, { method, headers })
 }

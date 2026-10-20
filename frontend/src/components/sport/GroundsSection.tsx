@@ -1,9 +1,12 @@
 import { memo, type CSSProperties } from 'react'
 import { findSportTheme, venueImageFor, type SportTheme } from '../../config/sportThemes'
+import { addYourCourt } from '../../content/ownerPage'
 import { grounds } from '../../content/sportPage'
 import type { AsyncState } from '../../hooks/useAsync'
 import { useSportVenues, type SportVenues } from '../../hooks/useSportVenues'
+import { addVenuePath } from '../../utils/paths'
 import { SportBackdrop } from '../SportBackdrop'
+import { Button } from '../ui/Button'
 import { SectionTitle } from '../ui/SectionTitle'
 import { VenueCard, VenueCardSkeleton } from './VenueCard'
 
@@ -23,6 +26,9 @@ export const GroundsSection = memo(function GroundsSection({ theme }: GroundsSec
       <div className="grounds__inner">
         <SectionTitle id="grounds-title">{grounds.title}</SectionTitle>
         <GroundsContent state={venues} />
+        <div className="grounds__add">
+          <Button to={addVenuePath(theme)} label={addYourCourt.cta} accent={theme.color} withArrow viewTransition />
+        </div>
       </div>
     </section>
   )
@@ -64,7 +70,7 @@ const VenueList = memo(function VenueList({ data, stale = false }: VenueListProp
   return (
     <div className="grounds__list" data-state={stale ? 'stale' : undefined} aria-busy={stale || undefined}>
       {data.venues.map((venue, position) => (
-        <VenueCard key={venue.id} venue={venue} sport={sport} image={venueImageFor(sport, position)} />
+        <VenueCard key={venue.id} venue={venue} sport={sport} image={venue.imageUrl ?? venueImageFor(sport, position)} />
       ))}
     </div>
   )

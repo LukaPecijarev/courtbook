@@ -26,9 +26,9 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler(SlotAlreadyBookedException.class)
+    @ExceptionHandler({SlotAlreadyBookedException.class, SlotAlreadyPublishedException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleSlotAlreadyBooked(SlotAlreadyBookedException e) {
+    public ErrorResponse handleConflict(RuntimeException e) {
         return new ErrorResponse(e.getMessage());
     }
 

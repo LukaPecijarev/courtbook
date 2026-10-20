@@ -25,8 +25,9 @@ class AvailabilityCalculatorTests {
     @Test
     void bookedSlotIsRemovedFromFreeSlots() {
         LocalDateTime booked = DATE.atTime(18, 0);
+        List<LocalDateTime> published = AvailabilityCalculator.slotStarts(DATE, OPENING, CLOSING);
 
-        List<LocalDateTime> freeStarts = AvailabilityCalculator.slots(DATE, OPENING, CLOSING, List.of(booked))
+        List<LocalDateTime> freeStarts = AvailabilityCalculator.slots(published, List.of(booked))
                 .stream()
                 .filter(Slot::available)
                 .map(Slot::startAt)

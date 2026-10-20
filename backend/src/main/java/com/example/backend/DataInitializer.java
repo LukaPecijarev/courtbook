@@ -2,9 +2,15 @@ package com.example.backend;
 
 import com.example.backend.model.Sport;
 import com.example.backend.model.Venue;
+import com.example.backend.model.VenueSlot;
 import com.example.backend.repository.SportRepository;
 import com.example.backend.repository.VenueRepository;
+import com.example.backend.repository.VenueSlotRepository;
+import com.example.backend.service.domain.AvailabilityCalculator;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +25,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class DataInitializer implements CommandLineRunner {
 
     private static final String TOP_10 = "Top 10";
+    private static final int SEED_SLOT_DAYS = 14;
 
     private final SportRepository sportRepository;
     private final VenueRepository venueRepository;
+    private final VenueSlotRepository venueSlotRepository;
 
     @Override
     @Transactional
@@ -61,19 +69,37 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void seedVenues(List<Venue> venues) {
-        venues.forEach(seed -> venueRepository.findFirstByName(seed.getName())
-                .ifPresentOrElse(existing -> updateDetails(existing, seed), () -> venueRepository.save(seed)));
+        venues.forEach(seed -> publishUpcomingSlots(venueRepository.findFirstByName(seed.getName())
+                .map(existing -> updateDetails(existing, seed))
+                .orElseGet(() -> venueRepository.save(seed))));
     }
 
-    private static void updateDetails(Venue existing, Venue seed) {
+    private void publishUpcomingSlots(Venue venue) {
+        LocalDate today = LocalDate.now();
+        Set<LocalDateTime> published = new HashSet<>(venueSlotRepository.findStartTimes(venue.getId(),
+                today.atStartOfDay(), today.plusDays(SEED_SLOT_DAYS).atStartOfDay()));
+        List<VenueSlot> missing = today.datesUntil(today.plusDays(SEED_SLOT_DAYS))
+                .flatMap(date -> AvailabilityCalculator.slotStarts(date, venue.getOpeningTime(), venue.getClosingTime())
+                        .stream())
+                .filter(start -> !published.contains(start))
+                .map(start -> VenueSlot.publish(venue, start))
+                .toList();
+        if (!missing.isEmpty()) {
+            venueSlotRepository.saveAll(missing);
+            log.info("Published {} slots for seeded venue: {}", missing.size(), venue.getName());
+        }
+    }
+
+    private static Venue updateDetails(Venue existing, Venue seed) {
         if (existing.updateDetails(seed.getSurface(), seed.getBadge(), seed.getAmenities())) {
             log.info("Updated details of seeded venue: {}", existing.getName());
         }
+        return existing;
     }
 
     private static Venue venue(String name, String address, String description, String pricePerHour,
                                String surface, List<String> amenities, Sport... sports) {
-        return new Venue(name, "Skopje", address, description, new BigDecimal(pricePerHour),
+        return new Venue(name, Venue.DEFAULT_CITY, address, description, new BigDecimal(pricePerHour),
                 Venue.DEFAULT_OPENING_TIME, Venue.DEFAULT_CLOSING_TIME, Set.of(sports),
                 surface, TOP_10, amenities);
     }

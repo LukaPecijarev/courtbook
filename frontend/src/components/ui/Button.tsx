@@ -8,6 +8,8 @@ interface CommonProps {
   fillFrom?: 'left' | 'right'
   withArrow?: boolean
   quiet?: boolean
+  size?: 'sm'
+  tone?: 'danger'
 }
 
 interface LinkProps extends CommonProps {
@@ -21,20 +23,25 @@ interface ButtonProps extends CommonProps {
   to?: undefined
   type?: 'button' | 'submit'
   disabled?: boolean
+  busy?: boolean
   onClick?: () => void
 }
 
 export function Button(props: LinkProps | ButtonProps) {
-  const { label, accent, fillFrom = 'left', withArrow = false, quiet = false } = props
+  const { label, accent, fillFrom = 'left', withArrow = false, quiet = false, size, tone } = props
   const shared = {
     className: 'btn',
     style: accent ? accentStyle(accent) : undefined,
     'data-fill': fillFrom,
     'data-arrow': withArrow || undefined,
     'data-quiet': quiet || undefined,
+    'data-size': size,
+    'data-tone': tone,
   }
+  const busy = props.to === undefined && props.busy === true
   const content = (
     <>
+      {busy && <span className="btn__spinner" aria-hidden="true" />}
       <span>{label}</span>
       {withArrow && (
         <span data-icon aria-hidden="true">
@@ -54,7 +61,13 @@ export function Button(props: LinkProps | ButtonProps) {
     )
   }
   return (
-    <button type={props.type ?? 'button'} disabled={props.disabled} onClick={props.onClick} {...shared}>
+    <button
+      type={props.type ?? 'button'}
+      disabled={props.disabled || busy}
+      aria-busy={busy || undefined}
+      onClick={props.onClick}
+      {...shared}
+    >
       {content}
     </button>
   )

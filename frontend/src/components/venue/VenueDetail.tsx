@@ -5,6 +5,7 @@ import { venuePage } from '../../content/venuePage'
 import { useAvailability } from '../../hooks/useAvailability'
 import { accentStyle } from '../../utils/color'
 import { nextDays, toIsoDate } from '../../utils/date'
+import { venueLocation } from '../../utils/ui'
 import { venueTransitionName } from '../../utils/venueTransition'
 import { Reveal } from '../Reveal'
 import { SportBackdrop } from '../SportBackdrop'
@@ -64,7 +65,7 @@ export function VenueDetail({ venue, sport, sportId, image }: VenueDetailProps) 
                   {venue.badge && <Tag tone="outline">{venue.badge}</Tag>}
                 </div>
                 <p className="venue-page__location">
-                  {venue.address}, {venue.city}
+                  {venueLocation(venue)}
                 </p>
                 {venue.amenities.length > 0 && (
                   <ul className="venue-page__amenities" aria-label={venuePage.amenities}>

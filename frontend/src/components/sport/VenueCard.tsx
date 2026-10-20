@@ -1,13 +1,15 @@
-import { memo, type MouseEvent } from 'react'
+import { memo, useState, type MouseEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { VenueResponse } from '../../api/venues'
 import type { SportTheme } from '../../config/sportThemes'
+import { manageKeyDialog } from '../../content/ownerPage'
 import { grounds } from '../../content/sportPage'
 import { useInView } from '../../hooks/useInView'
 import { venuePath } from '../../utils/paths'
 import { decodeImage } from '../../utils/preload'
-import { isPlainClick, prefersReducedMotion } from '../../utils/ui'
+import { isPlainClick, prefersReducedMotion, venueLocation } from '../../utils/ui'
 import { venueTransitionName, type VenuePreview } from '../../utils/venueTransition'
+import { ManageKeyDialog } from '../owner/ManageKeyDialog'
 import { Button } from '../ui/Button'
 import { Card } from '../ui/Card'
 import { Price } from '../ui/Price'
@@ -24,6 +26,7 @@ export const VenueCard = memo(function VenueCard({ venue, sport, image }: VenueC
   const { ref, inView } = useInView<HTMLElement>()
   const preview: VenuePreview = { venue, image }
   const navigate = useNavigate()
+  const [managing, setManaging] = useState(false)
   const path = venuePath(venue, sport)
 
   const reserve = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -43,23 +46,34 @@ export const VenueCard = memo(function VenueCard({ venue, sport, image }: VenueC
         <div className="venue-card__body">
           <h3 className="venue-card__name">{venue.name}</h3>
           <p className="venue-card__muted">
-            {venue.address}, {venue.city}
+            {venueLocation(venue)}
           </p>
           {venue.description && <p>{venue.description}</p>}
           <div className="venue-card__footer">
             <Price amount={venue.pricePerHour} variant="tag" />
-            <Button
-              to={path}
-              state={preview}
-              label={grounds.reserve}
-              withArrow
-              quiet
-              viewTransition
-              onClick={reserve}
-            />
+            <div className="venue-card__actions">
+              <Button
+                type="button"
+                label={manageKeyDialog.open}
+                size="sm"
+                quiet
+                accent={sport.color}
+                onClick={() => setManaging(true)}
+              />
+              <Button
+                to={path}
+                state={preview}
+                label={grounds.reserve}
+                withArrow
+                quiet
+                viewTransition
+                onClick={reserve}
+              />
+            </div>
           </div>
         </div>
       </Card>
+      {managing && <ManageKeyDialog venueId={venue.id} venueName={venue.name} onClose={() => setManaging(false)} />}
     </article>
   )
 })

@@ -309,3 +309,227 @@
     opacity: 0;
   }
 }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-family: var(--font-condensed);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.field input,
+.field textarea {
+  padding: 13px 16px;
+  border: 1px solid var(--landing-line);
+  border-radius: 14px;
+  background: var(--landing-bg);
+  color: var(--landing-text-strong);
+  font: inherit;
+  transition: border-color 300ms ease;
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.field input[aria-invalid='true'],
+.field textarea[aria-invalid='true'] {
+  border-color: var(--landing-error);
+}
+
+.field__error {
+  font-size: 0.85rem;
+  color: var(--landing-error);
+}
+
+.btn[data-size='sm'] {
+  --btn-padding: 8px 18px;
+
+  gap: 8px;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+}
+
+.btn[data-tone='danger'] {
+  --accent: var(--landing-error);
+  --on-accent: var(--accent-ink);
+
+  color: var(--landing-error);
+}
+
+.dialog {
+  width: min(100% - 32px, 440px);
+  max-width: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  overflow: visible;
+}
+
+.dialog::backdrop {
+  background: rgba(5, 6, 8, 0.72);
+  backdrop-filter: blur(4px);
+}
+
+.dialog[open] {
+  animation: dialog-rise 320ms var(--ease-out) both;
+}
+
+.dialog[open]::backdrop {
+  animation: dialog-fade 240ms ease-out both;
+}
+
+.dialog__panel {
+  --card-radius: 24px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 28px 24px;
+}
+
+.dialog__text {
+  color: var(--landing-text);
+}
+
+.dialog__text strong {
+  color: var(--landing-text-strong);
+}
+
+.dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+@keyframes dialog-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dialog-rise {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog[open],
+  .dialog[open]::backdrop {
+    animation: none;
+  }
+}
+
+.field__hint {
+  font-size: 0.9rem;
+  color: var(--landing-text);
+}
+
+.field__hint strong {
+  color: var(--landing-text-strong);
+  overflow-wrap: anywhere;
+}
+
+.field input:disabled,
+.field textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn__spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: btn-spin 700ms linear infinite;
+}
+
+.btn[aria-busy='true'] {
+  opacity: 1;
+  cursor: progress;
+}
+
+.dialog[data-state='leaving'] {
+  animation: dialog-leave 200ms ease-in both;
+}
+
+.dialog[data-state='leaving']::backdrop {
+  animation: dialog-backdrop-leave 200ms ease-in both;
+}
+
+.toaster {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  z-index: 50;
+  transform: translateX(-50%);
+  background: none;
+  pointer-events: none;
+}
+
+.toast {
+  padding: 12px 20px;
+  border: 1px solid var(--landing-line);
+  border-radius: 999px;
+  background: var(--landing-surface);
+  color: var(--landing-text-strong);
+  font-size: 0.9rem;
+  box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.7);
+  animation: toast-in 260ms var(--ease-out) both;
+}
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes dialog-leave {
+  to {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+}
+
+@keyframes dialog-backdrop-leave {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn__spinner {
+    animation-duration: 1600ms;
+  }
+
+  .dialog[data-state='leaving'],
+  .dialog[data-state='leaving']::backdrop,
+  .toast {
+    animation: none;
+  }
+}

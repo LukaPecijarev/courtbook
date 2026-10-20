@@ -16,6 +16,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,6 +36,8 @@ public class Venue {
 
     public static final LocalTime DEFAULT_OPENING_TIME = LocalTime.of(8, 0);
     public static final LocalTime DEFAULT_CLOSING_TIME = LocalTime.of(23, 0);
+    public static final String DEFAULT_CITY = "Skopje";
+    public static final int MAX_IMAGE_URL_LENGTH = 500;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,8 +51,6 @@ public class Venue {
     @Column(nullable = false)
     private String city;
 
-    @NotBlank
-    @Column(nullable = false)
     private String address;
 
     @Column(columnDefinition = "TEXT")
@@ -87,6 +89,13 @@ public class Venue {
     @Column(name = "amenity", nullable = false)
     private List<String> amenities = new ArrayList<>();
 
+    @Size(max = MAX_IMAGE_URL_LENGTH)
+    @Column(length = MAX_IMAGE_URL_LENGTH)
+    private String imageUrl;
+
+    @Column(length = 64)
+    private String managementKeyHash;
+
     public Venue(String name, String city, String address, String description, BigDecimal pricePerHour,
                  LocalTime openingTime, LocalTime closingTime, Set<Sport> sports,
                  String surface, String badge, List<String> amenities) {
@@ -102,6 +111,40 @@ public class Venue {
         }
         this.sports = new HashSet<>(sports);
         updateDetails(surface, badge, amenities);
+    }
+
+    public static Venue addedByOwner(String name, String description, BigDecimal pricePerHour, String imageUrl,
+                                     Sport sport, String managementKeyHash) {
+        Venue venue = new Venue(name, DEFAULT_CITY, null, description, pricePerHour, null, null, Set.of(sport),
+                null, null, List.of());
+        venue.imageUrl = requireHttpsUrl(imageUrl);
+        venue.managementKeyHash = Objects.requireNonNull(managementKeyHash);
+        return venue;
+    }
+
+    public void updateListing(String name, String description, BigDecimal pricePerHour, String imageUrl) {
+        this.name = name;
+        this.description = description;
+        this.pricePerHour = pricePerHour;
+        this.imageUrl = requireHttpsUrl(imageUrl);
+    }
+
+    private static String requireHttpsUrl(String url) {
+        if (url == null || url.isBlank()) {
+            return null;
+        }
+        if (url.length() > MAX_IMAGE_URL_LENGTH) {
+            throw new IllegalArgumentException("Image URL must be at most " + MAX_IMAGE_URL_LENGTH + " characters");
+        }
+        try {
+            URI uri = new URI(url.strip());
+            if (!"https".equalsIgnoreCase(uri.getScheme()) || uri.getHost() == null) {
+                throw new IllegalArgumentException("Image URL must start with https://");
+            }
+            return uri.toString();
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Image URL is not a valid URL");
+        }
     }
 
     public boolean updateDetails(String surface, String badge, List<String> amenities) {

@@ -1,4 +1,5 @@
 import type { MouseEvent } from 'react'
+import type { VenueResponse } from '../api/venues'
 import { pricing } from '../content/sportPage'
 
 export function classNames(...names: (string | false | null | undefined)[]): string {
@@ -29,4 +30,8 @@ export function formatPrice(amount: number): string {
 
 export function formatPricePerHour(pricePerHour: number): string {
   return `${formatPrice(pricePerHour)} ${pricing.perHour}`
+}
+
+export function venueLocation(venue: VenueResponse): string {
+  return [venue.address, venue.city].filter(Boolean).join(', ')
 }

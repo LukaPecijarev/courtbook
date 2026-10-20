@@ -6,6 +6,7 @@ import com.example.backend.model.Sport;
 import com.example.backend.model.Venue;
 import com.example.backend.repository.BookingRepository;
 import com.example.backend.repository.VenueRepository;
+import com.example.backend.repository.VenueSlotRepository;
 import com.example.backend.service.application.VenueApplicationService;
 import com.example.backend.service.domain.AvailabilityCalculator;
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ public class VenueApplicationServiceImpl implements VenueApplicationService {
 
     private final VenueRepository venueRepository;
     private final BookingRepository bookingRepository;
+    private final VenueSlotRepository venueSlotRepository;
     private final EntityLookup entityLookup;
 
     @Override
@@ -42,7 +44,7 @@ public class VenueApplicationServiceImpl implements VenueApplicationService {
         Venue venue = entityLookup.venue(venueId);
         Sport sport = entityLookup.sport(sportId);
         venue.requireOffers(sport);
-        return AvailabilityCalculator.slots(date, venue.getOpeningTime(), venue.getClosingTime(),
+        return AvailabilityCalculator.slots(venueSlotRepository.findStartTimesOn(venueId, date),
                         bookingRepository.findStartTimesOn(venueId, date)).stream()
                 .map(slot -> new SlotResponse(slot.startAt(), slot.available()))
                 .toList();

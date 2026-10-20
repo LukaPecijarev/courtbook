@@ -8,6 +8,11 @@
   border-radius: 23px 23px 0 0;
 }
 
+.venue-card__media img {
+  object-fit: cover;
+  object-position: center;
+}
+
 .venue-card__body {
   display: flex;
   flex-direction: column;
@@ -41,14 +46,21 @@
   padding-top: 12px;
 }
 
+.venue-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
 @media (min-width: 768px) {
   .venue-card {
     grid-template-columns: 2fr 3fr;
   }
 
   .venue-card__media {
-    aspect-ratio: auto;
-    min-height: 240px;
+    align-self: start;
+    aspect-ratio: 4 / 3;
     border-radius: 23px 0 0 23px;
   }
 
@@ -87,6 +99,11 @@
 
 .grounds__error {
   color: var(--landing-error);
+}
+
+.grounds__add {
+  display: flex;
+  justify-content: center;
 }
 
 @media (min-width: 640px) {

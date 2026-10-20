@@ -6,8 +6,10 @@ import com.example.backend.model.Booking;
 import com.example.backend.model.Venue;
 import com.example.backend.repository.BookingRepository;
 import com.example.backend.repository.VenueRepository;
+import com.example.backend.repository.VenueSlotRepository;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +32,36 @@ class DataInitializerTests {
     private BookingRepository bookingRepository;
 
     @Autowired
+    private VenueSlotRepository venueSlotRepository;
+
+    @Autowired
     private EntityManager entityManager;
+
+    @Test
+    void seededVenuesGetFourteenDaysOfHourlySlotsAndRerunsOnlyFillGaps() {
+        Venue venue = venueRepository.findFirstByName(VENUE_NAME).orElseThrow();
+        LocalDate today = LocalDate.now();
+        LocalDateTime from = today.atStartOfDay();
+        LocalDateTime to = today.plusDays(14).atStartOfDay();
+        List<LocalDateTime> seeded = venueSlotRepository.findStartTimes(venue.getId(), from, to);
+        assertThat(seeded)
+                .hasSize(14 * 15)
+                .contains(today.atTime(8, 0), today.plusDays(13).atTime(22, 0))
+                .doesNotContain(today.plusDays(14).atTime(8, 0), today.atTime(23, 0));
+
+        LocalDateTime removed = today.plusDays(2).atTime(15, 0);
+        venueSlotRepository.delete(venueSlotRepository.findByVenueIdAndStartAtGreaterThanEqualOrderByStartAt(
+                venue.getId(), removed).get(0));
+        entityManager.flush();
+        long slotsBefore = venueSlotRepository.count();
+
+        dataInitializer.run();
+        dataInitializer.run();
+        entityManager.flush();
+
+        assertThat(venueSlotRepository.count()).isEqualTo(slotsBefore + 1);
+        assertThat(venueSlotRepository.findStartTimes(venue.getId(), from, to)).containsExactlyElementsOf(seeded);
+    }
 
     @Test
     void runUpdatesDetailsOfExistingVenueAndKeepsTheRest() {

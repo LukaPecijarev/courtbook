@@ -24,10 +24,10 @@ public final class AvailabilityCalculator {
         return starts;
     }
 
-    public static List<Slot> slots(LocalDate date, LocalTime openingTime, LocalTime closingTime,
-                                   Collection<LocalDateTime> bookedStarts) {
+    public static List<Slot> slots(Collection<LocalDateTime> publishedStarts, Collection<LocalDateTime> bookedStarts) {
         Set<LocalDateTime> booked = new HashSet<>(bookedStarts);
-        return slotStarts(date, openingTime, closingTime).stream()
+        return publishedStarts.stream()
+                .sorted()
                 .map(start -> new Slot(start, !booked.contains(start)))
                 .toList();
     }

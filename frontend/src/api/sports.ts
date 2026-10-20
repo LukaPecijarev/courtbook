@@ -4,9 +4,19 @@ export interface SportResponse {
   id: number
   name: string
   color: string
-  imageUrl: string | null
 }
 
-export function fetchSports(signal?: AbortSignal): Promise<SportResponse[]> {
-  return getJson<SportResponse[]>('/sports', signal)
+let sportsRequest: Promise<SportResponse[]> | null = null
+
+function loadSports(): Promise<SportResponse[]> {
+  sportsRequest ??= getJson<SportResponse[]>('/sports').catch((error: unknown) => {
+    sportsRequest = null
+    throw error
+  })
+  return sportsRequest
+}
+
+export async function findSportByThemeId(themeId: string): Promise<SportResponse | undefined> {
+  const sports = await loadSports()
+  return sports.find((sport) => sport.name.toLowerCase() === themeId)
 }

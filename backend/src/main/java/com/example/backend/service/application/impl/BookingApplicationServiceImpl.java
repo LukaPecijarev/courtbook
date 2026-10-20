@@ -5,6 +5,7 @@ import com.example.backend.dto.CreateBookingRequest;
 import com.example.backend.model.Booking;
 import com.example.backend.model.Sport;
 import com.example.backend.model.Venue;
+import com.example.backend.repository.VenueSlotRepository;
 import com.example.backend.service.application.BookingApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,16 @@ public class BookingApplicationServiceImpl implements BookingApplicationService 
 
     private final EntityLookup entityLookup;
     private final BookingWriter bookingWriter;
+    private final VenueSlotRepository venueSlotRepository;
 
     @Override
     @Transactional
     public BookingResponse createBooking(Long venueId, CreateBookingRequest request) {
         Venue venue = entityLookup.venue(venueId);
         Sport sport = entityLookup.sport(request.sportId());
+        if (!venueSlotRepository.existsByVenueIdAndStartAt(venueId, request.startAt())) {
+            throw new IllegalArgumentException("Slot is not published: " + request.startAt());
+        }
         Booking booking = bookingWriter.save(venueId, request.startAt(), () -> Booking.forCustomer(
                 venue, sport, request.startAt(), request.customerName(), request.customerEmail()));
         return BookingResponse.from(booking);

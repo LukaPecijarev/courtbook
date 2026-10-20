@@ -3,22 +3,17 @@ import type { AsyncState } from '../../hooks/useAsync'
 import type { AvailabilitySlot } from '../../hooks/useAvailability'
 import { formatTime } from '../../utils/date'
 import { Chip } from '../ui/Chip'
+import { SLOT_PERIODS } from './slotPeriods'
 
 const SKELETON_COUNT = 12
-
-const PERIODS = [
-  { id: 'morning', label: venuePage.morning, untilHour: 12 },
-  { id: 'afternoon', label: venuePage.afternoon, untilHour: 18 },
-  { id: 'evening', label: venuePage.evening, untilHour: 24 },
-]
 
 function startHour(slot: AvailabilitySlot): number {
   return Number(slot.startAt.slice(11, 13))
 }
 
 function groupByPeriod(slots: AvailabilitySlot[]) {
-  return PERIODS.map((period, index) => {
-    const fromHour = index === 0 ? 0 : PERIODS[index - 1].untilHour
+  return SLOT_PERIODS.map((period, index) => {
+    const fromHour = index === 0 ? 0 : SLOT_PERIODS[index - 1].untilHour
     const periodSlots = slots.filter((slot) => startHour(slot) >= fromHour && startHour(slot) < period.untilHour)
     return { ...period, slots: periodSlots }
   }).filter((period) => period.slots.length > 0)

@@ -5,12 +5,20 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     boolean existsByVenueIdAndStartAt(Long venueId, LocalDateTime startAt);
+
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("delete from Booking b where b.venue.id = :venueId")
+    void deleteAllByVenueId(@Param("venueId") Long venueId);
+
+    @Query("select b.startAt from Booking b where b.venue.id = :venueId and b.startAt >= :from")
+    List<LocalDateTime> findStartTimesFrom(@Param("venueId") Long venueId, @Param("from") LocalDateTime from);
 
     @Query("""
             select b.startAt from Booking b

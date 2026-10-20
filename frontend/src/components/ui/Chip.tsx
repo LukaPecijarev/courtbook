@@ -1,5 +1,5 @@
 import type { ButtonHTMLAttributes } from 'react'
-import { classNames } from '../../utils/classNames'
+import { classNames } from '../../utils/ui'
 
 interface ChipProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
   selected?: boolean

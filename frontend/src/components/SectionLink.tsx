@@ -1,7 +1,6 @@
 import type { MouseEvent, ReactNode } from 'react'
-import { isPlainClick } from '../utils/events'
-import { playPress } from '../utils/motion'
 import { scrollToSection } from '../utils/scroll'
+import { isPlainClick, playPress } from '../utils/ui'
 
 interface SectionLinkProps {
   section: string

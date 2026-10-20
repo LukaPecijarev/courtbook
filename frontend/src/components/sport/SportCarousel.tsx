@@ -2,7 +2,7 @@ import { memo, useEffect, useRef, useState, type CSSProperties, type PointerEven
 import { neighbourSport, sportDistance, sportThemes, type SportTheme } from '../../config/sportThemes'
 import { carousel } from '../../content/sportPage'
 import { useSportCarousel, type Direction } from '../../hooks/useSportCarousel'
-import { prefersReducedMotion } from '../../utils/motion'
+import { prefersReducedMotion } from '../../utils/ui'
 import './SportCarousel.css'
 
 const REACH = Math.floor(sportThemes.length / 2) + 1

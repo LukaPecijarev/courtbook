@@ -25,6 +25,11 @@ public class VenueController {
         return venueApplicationService.listVenues(sportId);
     }
 
+    @GetMapping("/{id}")
+    public VenueResponse getVenue(@PathVariable Long id) {
+        return venueApplicationService.getVenue(id);
+    }
+
     @GetMapping("/{id}/availability")
     public List<SlotResponse> getAvailability(
             @PathVariable Long id,

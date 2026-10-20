@@ -3,7 +3,6 @@ import { Hero } from '../components/landing/Hero'
 import { SportBlock } from '../components/landing/SportBlock'
 import { findSportTheme } from '../config/sportThemes'
 import { landingSports } from '../content/landing'
-import './LandingPage.css'
 
 const sportBlocks = landingSports.flatMap((sport) => {
   const theme = findSportTheme(sport.sportId)

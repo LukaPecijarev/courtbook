@@ -1,5 +1,5 @@
 import { pricing } from '../../content/sportPage'
-import { formatPrice, formatPricePerHour } from '../../utils/format'
+import { formatPrice, formatPricePerHour } from '../../utils/ui'
 import { Tag } from './Tag'
 
 interface PriceProps {

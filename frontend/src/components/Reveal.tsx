@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { useInView } from '../hooks/useInView'
-import { classNames } from '../utils/classNames'
+import { classNames } from '../utils/ui'
 
 interface RevealProps {
   id?: string

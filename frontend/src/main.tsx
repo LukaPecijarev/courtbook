@@ -6,9 +6,6 @@ import './styles/theme.css'
 import './styles/effects.css'
 import './styles/ui.css'
 import { router } from './router'
-import { trackViewTransitions } from './utils/viewTransitions'
-
-trackViewTransitions()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

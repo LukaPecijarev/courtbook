@@ -13,7 +13,7 @@ function contrastRatio(a: number, b: number): number {
   return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
 }
 
-export function readableTextColor(background: string): string {
+function readableTextColor(background: string): string {
   const luminance = relativeLuminance(background)
   return contrastRatio(luminance, relativeLuminance(DARK_TEXT)) >=
     contrastRatio(luminance, relativeLuminance(LIGHT_TEXT))

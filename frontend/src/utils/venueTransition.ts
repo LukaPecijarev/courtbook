@@ -1,8 +1,7 @@
 import type { VenueResponse } from '../api/venues'
-import { morphProps } from './viewTransitions'
 
-export function venueMorphProps(venueId: number) {
-  return morphProps(`venue-${venueId}`)
+export function venueTransitionName(venueId: number): string {
+  return `venue-${venueId}`
 }
 
 export interface VenuePreview {

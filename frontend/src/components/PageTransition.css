@@ -33,24 +33,24 @@
   animation: page-rise 280ms cubic-bezier(0.22, 1, 0.36, 1) 100ms both;
 }
 
-.is-transitioning .skeleton::after,
-.is-transitioning .sport-backdrop__layer,
-.is-transitioning .hero__scroll-line {
+:root:active-view-transition .skeleton::after,
+:root:active-view-transition .sport-backdrop__layer,
+:root:active-view-transition .hero__scroll-line {
   animation-play-state: paused;
 }
 
-.is-transitioning .card,
-.is-transitioning .chip {
+:root:active-view-transition .card,
+:root:active-view-transition .chip {
   box-shadow: none;
 }
 
-.is-transitioning .card,
-.is-transitioning .chip,
-.is-transitioning .btn,
-.is-transitioning .btn::before,
-.is-transitioning .reveal,
-.is-transitioning .reveal > *,
-.is-transitioning .zoom-media img {
+:root:active-view-transition .card,
+:root:active-view-transition .chip,
+:root:active-view-transition .btn,
+:root:active-view-transition .btn::before,
+:root:active-view-transition .reveal,
+:root:active-view-transition .reveal > *,
+:root:active-view-transition .zoom-media img {
   transition: none;
 }
 

@@ -32,6 +32,12 @@ public class VenueApplicationServiceImpl implements VenueApplicationService {
 
     @Override
     @Transactional(readOnly = true)
+    public VenueResponse getVenue(Long venueId) {
+        return VenueResponse.from(entityLookup.venue(venueId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<SlotResponse> getAvailability(Long venueId, LocalDate date, Long sportId) {
         Venue venue = entityLookup.venue(venueId);
         Sport sport = entityLookup.sport(sportId);

@@ -5,7 +5,7 @@ export interface LandingSport {
   brief: string
 }
 
-export type LandingLink = { label: string } & ({ section: string } | { to: string })
+type LandingLink = { label: string } & ({ section: string } | { to: string })
 
 export const hero = {
   image: '/images/landing/LandingPageFirstImage.webp',

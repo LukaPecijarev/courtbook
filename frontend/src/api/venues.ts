@@ -18,28 +18,12 @@ export interface SlotResponse {
   available: boolean
 }
 
-export interface CreateBookingRequest {
-  sportId: number
-  startAt: string
-  customerName: string
-  customerEmail: string
-}
-
-export interface BookingResponse {
-  id: number
-  type: 'CUSTOMER' | 'BLOCKED'
-  venueId: number
-  venueName: string
-  sportId: number | null
-  sportName: string | null
-  startAt: string
-  durationMinutes: number
-  customerName: string | null
-  customerEmail: string | null
-}
-
 export function fetchVenues(sportId?: number, signal?: AbortSignal): Promise<VenueResponse[]> {
   return getJson<VenueResponse[]>(sportId === undefined ? '/venues' : `/venues?sportId=${sportId}`, signal)
+}
+
+export function fetchVenue(id: number, signal?: AbortSignal): Promise<VenueResponse> {
+  return getJson<VenueResponse>(`/venues/${id}`, signal)
 }
 
 export function fetchAvailability(
@@ -51,6 +35,9 @@ export function fetchAvailability(
   return getJson<SlotResponse[]>(`/venues/${venueId}/availability?date=${date}&sportId=${sportId}`, signal)
 }
 
-export function createBooking(venueId: number, request: CreateBookingRequest): Promise<BookingResponse> {
-  return postJson<BookingResponse>(`/venues/${venueId}/bookings`, request)
+export async function createBooking(
+  venueId: number,
+  request: { sportId: number; startAt: string; customerName: string; customerEmail: string },
+): Promise<void> {
+  await postJson(`/venues/${venueId}/bookings`, request)
 }

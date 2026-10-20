@@ -1,4 +1,4 @@
-export interface VenueDetails {
+interface VenueDetails {
   surface: string
   amenities: string[]
   badge?: string

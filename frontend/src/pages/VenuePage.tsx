@@ -1,4 +1,5 @@
 import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
+import { ApiError } from '../api/client'
 import type { VenueResponse } from '../api/venues'
 import { TopBar } from '../components/TopBar'
 import { VenueDetail } from '../components/venue/VenueDetail'
@@ -22,9 +23,8 @@ function pickSport(venue: VenueResponse, requested: string | null): SportOffer |
   return offers.find((offer) => offer.sport.id === requested) ?? offers[0]
 }
 
-function positionInSport(allVenues: VenueResponse[], venue: VenueResponse, sportId: number): number {
-  const sportVenues = allVenues.filter((candidate) => candidate.sports.some((sport) => sport.id === sportId))
-  return Math.max(0, sportVenues.findIndex((candidate) => candidate.id === venue.id))
+function isNotFound(error: unknown): boolean {
+  return error instanceof ApiError && error.status === 404
 }
 
 export function VenuePage() {
@@ -35,16 +35,20 @@ export function VenuePage() {
   const lookup = useVenue(id)
   const preview = isVenuePreview(state, id) ? state : undefined
 
-  if (lookup.status === 'error') return <VenuePageMessage message={venuePage.loadError} isError />
+  if (lookup.status === 'error') {
+    return isNotFound(lookup.error) ? (
+      <VenuePageMessage message={venuePage.notFound} />
+    ) : (
+      <VenuePageMessage message={venuePage.loadError} isError />
+    )
+  }
   if (lookup.status === 'loading' && !preview) return <VenuePageMessage loading />
 
-  const loaded = lookup.status === 'loaded' ? lookup.data : undefined
-  const venue = loaded?.venue ?? preview?.venue
+  const venue = lookup.status === 'loaded' ? lookup.data : preview?.venue
   const offer = venue && pickSport(venue, searchParams.get('sport'))
   if (!venue || !offer) return <VenuePageMessage message={venuePage.notFound} />
 
-  const image =
-    preview?.image ?? venueImageFor(offer.sport, positionInSport(loaded?.allVenues ?? [], venue, offer.sportId))
+  const image = preview?.image ?? venueImageFor(offer.sport, venue.id)
   return (
     <VenueDetail
       key={`${venue.id}:${offer.sport.id}`}

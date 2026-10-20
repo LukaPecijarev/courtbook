@@ -1,4 +1,4 @@
-import { prefersReducedMotion } from './motion'
+import { prefersReducedMotion } from './ui'
 
 function pinnedHeaderHeight(): number {
   const pinned = Array.from(document.querySelectorAll('header')).filter((header) =>

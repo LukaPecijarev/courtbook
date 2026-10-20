@@ -1,5 +1,5 @@
 import type { HTMLAttributes } from 'react'
-import { classNames } from '../../utils/classNames'
+import { classNames } from '../../utils/ui'
 
 interface CardProps extends HTMLAttributes<HTMLElement> {
   as?: 'div' | 'article' | 'aside' | 'nav'

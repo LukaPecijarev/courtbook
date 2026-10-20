@@ -117,6 +117,21 @@ class BookingApiTests {
                 .andExpect(jsonPath("$[1].available").value(false));
     }
 
+    @Test
+    void venueByIdReturnsVenue() throws Exception {
+        mockMvc.perform(get("/api/venues/{id}", venueId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(venueId))
+                .andExpect(jsonPath("$.sports").isArray());
+    }
+
+    @Test
+    void unknownVenueReturns404() throws Exception {
+        mockMvc.perform(get("/api/venues/{id}", 999_999))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Venue not found: 999999"));
+    }
+
     private ResultActions book(LocalDateTime startAt) throws Exception {
         return mockMvc.perform(post("/api/venues/{id}/bookings", venueId)
                 .contentType(MediaType.APPLICATION_JSON)

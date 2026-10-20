@@ -6,7 +6,7 @@ import { venuePage } from '../../content/venuePage'
 import { useAvailability } from '../../hooks/useAvailability'
 import { accentStyle } from '../../utils/color'
 import { nextDays, toIsoDate } from '../../utils/date'
-import { venueMorphProps } from '../../utils/venueTransition'
+import { venueTransitionName } from '../../utils/venueTransition'
 import { Reveal } from '../Reveal'
 import { SportBackdrop } from '../SportBackdrop'
 import { TopBar } from '../TopBar'
@@ -52,7 +52,7 @@ export function VenueDetail({ venue, sport, sportId, image }: VenueDetailProps) 
       <div className="venue-page__content" inert={bookingSlot !== null}>
         <div className="venue-hero" data-cursor-accent>
           <TopBar sport={sport} overlay />
-          <img src={image} alt="" {...venueMorphProps(venue.id)} />
+          <img src={image} alt="" style={{ viewTransitionName: venueTransitionName(venue.id) }} />
         </div>
 
         <main className="venue-page__main">

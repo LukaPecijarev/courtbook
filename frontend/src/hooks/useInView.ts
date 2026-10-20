@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { afterViewTransition, isViewTransitionActive } from '../utils/viewTransitions'
 
 export function useInView<T extends Element>(rootMargin = '-10% 0px') {
   const ref = useRef<T>(null)
-  const [inView, setInView] = useState(isViewTransitionActive)
+  const [inView, setInView] = useState(false)
 
   useEffect(() => {
     const element = ref.current
@@ -12,14 +11,8 @@ export function useInView<T extends Element>(rootMargin = '-10% 0px') {
     const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), {
       rootMargin,
     })
-    let cancelled = false
-    afterViewTransition().then(() => {
-      if (!cancelled) observer.observe(element)
-    })
-    return () => {
-      cancelled = true
-      observer.disconnect()
-    }
+    observer.observe(element)
+    return () => observer.disconnect()
   }, [rootMargin])
 
   return { ref, inView }

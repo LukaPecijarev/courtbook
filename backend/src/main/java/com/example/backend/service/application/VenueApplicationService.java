@@ -9,5 +9,7 @@ public interface VenueApplicationService {
 
     List<VenueResponse> listVenues(Long sportId);
 
+    VenueResponse getVenue(Long venueId);
+
     List<SlotResponse> getAvailability(Long venueId, LocalDate date, Long sportId);
 }

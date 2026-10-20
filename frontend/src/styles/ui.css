@@ -245,3 +245,8 @@
     transform: none;
   }
 }
+
+.sport-page__missing {
+  padding: 64px 16px;
+  text-align: center;
+}

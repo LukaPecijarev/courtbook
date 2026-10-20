@@ -4,10 +4,10 @@ import type { VenueResponse } from '../../api/venues'
 import type { SportTheme } from '../../config/sportThemes'
 import { grounds } from '../../content/sportPage'
 import { useInView } from '../../hooks/useInView'
-import { isPlainClick } from '../../utils/events'
 import { venuePath } from '../../utils/paths'
 import { decodeImage } from '../../utils/preload'
-import { venueMorphProps, type VenuePreview } from '../../utils/venueTransition'
+import { isPlainClick, prefersReducedMotion } from '../../utils/ui'
+import { venueTransitionName, type VenuePreview } from '../../utils/venueTransition'
 import { Button } from '../ui/Button'
 import { Card } from '../ui/Card'
 import { Price } from '../ui/Price'
@@ -30,13 +30,15 @@ export const VenueCard = memo(function VenueCard({ venue, sport, image }: VenueC
   const reserve = (event: MouseEvent<HTMLAnchorElement>) => {
     if (!isPlainClick(event)) return
     event.preventDefault()
-    decodeImage(image, DECODE_WAIT_MS).then(() => navigate(path, { state: preview, viewTransition: true }))
+    decodeImage(image, DECODE_WAIT_MS).then(() =>
+      navigate(path, { state: preview, viewTransition: !prefersReducedMotion() }),
+    )
   }
 
   return (
     <article ref={ref} className="reveal" data-state={inView ? 'visible' : undefined} data-cursor-accent>
       <Card className="venue-card">
-        <div className="venue-card__media zoom-media" {...venueMorphProps(venue.id)}>
+        <div className="venue-card__media zoom-media" style={{ viewTransitionName: venueTransitionName(venue.id) }}>
           <img src={image} alt="" loading="lazy" decoding="async" />
         </div>
         <div className="venue-card__body">

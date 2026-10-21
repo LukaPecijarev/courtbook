@@ -1,9 +1,9 @@
 package com.example.backend.web;
 
-import com.example.backend.dto.AssistantMessageRequest;
-import com.example.backend.dto.AssistantReplyResponse;
-import com.example.backend.dto.FreeSlotResponse;
-import com.example.backend.dto.QuickQuestion;
+import com.example.backend.dto.AssistantDtos.AssistantMessageRequest;
+import com.example.backend.dto.AssistantDtos.AssistantReplyResponse;
+import com.example.backend.dto.AssistantDtos.FreeSlotResponse;
+import com.example.backend.dto.AssistantDtos.QuickQuestion;
 import com.example.backend.service.application.AssistantApplicationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

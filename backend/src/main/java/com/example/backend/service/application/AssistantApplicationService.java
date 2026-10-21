@@ -1,8 +1,8 @@
 package com.example.backend.service.application;
 
-import com.example.backend.dto.AssistantReplyResponse;
-import com.example.backend.dto.FreeSlotResponse;
-import com.example.backend.dto.QuickQuestion;
+import com.example.backend.dto.AssistantDtos.AssistantReplyResponse;
+import com.example.backend.dto.AssistantDtos.FreeSlotResponse;
+import com.example.backend.dto.AssistantDtos.QuickQuestion;
 import java.time.LocalDate;
 import java.util.List;
 

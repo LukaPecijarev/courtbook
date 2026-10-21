@@ -1,6 +1,8 @@
 package com.example.backend.exception;
 
 import com.example.backend.dto.ErrorResponse;
+import com.example.backend.exception.AssistantExceptions.AssistantUnavailableException;
+import com.example.backend.exception.AssistantExceptions.TooManyRequestsException;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;

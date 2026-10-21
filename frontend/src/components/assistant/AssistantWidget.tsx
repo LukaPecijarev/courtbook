@@ -1,12 +1,20 @@
-import { useEffect, useRef, useState, type AnimationEvent, type KeyboardEvent } from 'react'
-import { assistant, quickChips } from '../../content/assistant'
-import { useAssistantChat } from '../../hooks/useAssistantChat'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type AnimationEvent,
+  type FormEvent,
+  type KeyboardEvent,
+  type RefObject,
+} from 'react'
+import { Link } from 'react-router-dom'
+import { assistant, MAX_MESSAGE_LENGTH, quickChips } from '../../content/assistant'
+import { useAssistantChat, type ChatMessage } from '../../hooks/useAssistantChat'
 import { useCurrentSportTheme } from '../../hooks/useCurrentSportTheme'
 import { accentStyle } from '../../utils/color'
+import { formatTime } from '../../utils/date'
 import { prefersReducedMotion } from '../../utils/ui'
 import { SportIcon } from '../SportIcon'
-import { AssistantComposer } from './AssistantComposer'
-import { ChatBubble } from './ChatBubble'
 import '../../styles/assistant.css'
 
 const CLOSE_FALLBACK_MS = 400
@@ -129,5 +137,75 @@ export function AssistantWidget() {
         <AssistantComposer inputRef={inputRef} disabled={loading} onSend={send} />
       </section>
     </div>
+  )
+}
+
+function ChatBubble({ message }: { message: ChatMessage }) {
+  const { role, text, slots, sport, note, isError } = message
+  return (
+    <div className="assistant-message" data-role={role}>
+      <p className="assistant-bubble" data-tone={isError ? 'error' : undefined}>
+        {text}
+      </p>
+      {slots && sport && (
+        <ul className="assistant-slots">
+          {slots.map((slot) => (
+            <li key={`${slot.venueId}:${slot.startAt}`}>
+              <Link to={`/venues/${slot.venueId}?sport=${sport.id}`} className="assistant-slot">
+                <span className="assistant-slot__time">{formatTime(slot.startAt)}</span>
+                <span className="assistant-slot__venue">
+                  <strong>{slot.venueName}</strong>
+                  <span>
+                    {slot.pricePerHour} {assistant.perHour}
+                  </span>
+                </span>
+                <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+                  <path d="M3 8h10M9 4l4 4-4 4" />
+                </svg>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+      {note && <p className="assistant-note">{note}</p>}
+    </div>
+  )
+}
+
+interface AssistantComposerProps {
+  inputRef: RefObject<HTMLInputElement | null>
+  disabled: boolean
+  onSend: (text: string) => void
+}
+
+function AssistantComposer({ inputRef, disabled, onSend }: AssistantComposerProps) {
+  const [text, setText] = useState('')
+  const message = text.trim()
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault()
+    if (!message || disabled) return
+    onSend(message)
+    setText('')
+  }
+
+  return (
+    <form className="assistant-composer" onSubmit={submit}>
+      <input
+        ref={inputRef}
+        className="assistant-composer__input"
+        type="text"
+        value={text}
+        maxLength={MAX_MESSAGE_LENGTH}
+        placeholder={assistant.placeholder}
+        aria-label={assistant.placeholder}
+        onChange={(event) => setText(event.target.value)}
+      />
+      <button type="submit" className="assistant-send" disabled={!message || disabled} aria-label={assistant.send}>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M12 19V5M5.5 11.5 12 5l6.5 6.5" />
+        </svg>
+      </button>
+    </form>
   )
 }

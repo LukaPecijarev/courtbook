@@ -1,5 +1,6 @@
 package com.example.backend.web;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -29,7 +30,7 @@ class AssistantRateLimitTests {
 
     @BeforeEach
     void stubClaude() {
-        when(claudeAssistantClient.reply(anyString())).thenReturn("Следниот слободен термин е утре во 10:00.");
+        when(claudeAssistantClient.reply(anyString(), any())).thenReturn("Следниот слободен термин е утре во 10:00.");
     }
 
     @Test

@@ -12,9 +12,10 @@ import com.anthropic.models.messages.MessageParam;
 import com.anthropic.models.messages.OutputConfig;
 import com.anthropic.models.messages.StopReason;
 import com.anthropic.models.messages.TextBlock;
+import com.anthropic.models.messages.Tool;
 import com.anthropic.models.messages.ToolResultBlockParam;
 import com.anthropic.models.messages.ToolUseBlock;
-import com.example.backend.exception.AssistantUnavailableException;
+import com.example.backend.exception.AssistantExceptions.AssistantUnavailableException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.annotation.PreDestroy;
 import java.time.Duration;
@@ -27,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-/** Answers one customer message with Claude, running the tool loop over {@link AssistantTools}. */
+/** Answers one customer message with Claude, running the tool loop over the given {@link Tools}. */
 @Slf4j
 @Component
 public class ClaudeAssistantClient {
@@ -46,44 +47,51 @@ public class ClaudeAssistantClient {
             without markdown. Show times in 24-hour format and prices in MKD.
             Today is %s.""";
 
-    private final AnthropicClient client;
-    private final AssistantTools tools;
+    /** The tools the model may call while answering. */
+    public interface Tools {
 
-    public ClaudeAssistantClient(@Value("${courtbook.anthropic-api-key:}") String apiKey, AssistantTools tools) {
+        List<Tool> definitions();
+
+        /** Runs a tool and returns its result as text. */
+        String execute(String name, Map<String, Object> input);
+    }
+
+    private final AnthropicClient client;
+
+    public ClaudeAssistantClient(@Value("${courtbook.anthropic-api-key:}") String apiKey) {
         this.client = apiKey.isBlank() ? null : AnthropicOkHttpClient.builder()
                 .apiKey(apiKey)
                 .timeout(Duration.ofSeconds(30))
                 .build();
-        this.tools = tools;
     }
 
-    public String reply(String message) {
+    public String reply(String message, Tools tools) {
         if (client == null) {
             throw new AssistantUnavailableException("The assistant is not configured.");
         }
         try {
-            return converse(message);
+            return converse(message, tools);
         } catch (AnthropicException e) {
             log.warn("Assistant request failed: {}", e.getClass().getSimpleName());
             throw new AssistantUnavailableException("The assistant is unavailable right now.");
         }
     }
 
-    private String converse(String message) {
+    private String converse(String message, Tools tools) {
         List<MessageParam> messages = new ArrayList<>();
         messages.add(MessageParam.builder().role(MessageParam.Role.USER).content(message).build());
         for (int round = 0; round < MAX_TOOL_ROUNDS; round++) {
-            Message response = client.messages().create(params(messages));
+            Message response = client.messages().create(params(messages, tools));
             if (!response.stopReason().map(StopReason.TOOL_USE::equals).orElse(false)) {
                 return textOf(response);
             }
             messages.add(response.toParam());
-            messages.add(toolResults(response));
+            messages.add(toolResults(response, tools));
         }
         return FALLBACK_REPLY;
     }
 
-    private MessageCreateParams params(List<MessageParam> messages) {
+    private MessageCreateParams params(List<MessageParam> messages, Tools tools) {
         MessageCreateParams.Builder builder = MessageCreateParams.builder()
                 .model(MODEL)
                 .maxTokens(MAX_TOKENS)
@@ -94,16 +102,16 @@ public class ClaudeAssistantClient {
         return builder.build();
     }
 
-    private MessageParam toolResults(Message response) {
+    private MessageParam toolResults(Message response, Tools tools) {
         List<ContentBlockParam> results = response.content().stream()
                 .flatMap(block -> block.toolUse().stream())
-                .map(this::runTool)
+                .map(toolUse -> runTool(toolUse, tools))
                 .map(ContentBlockParam::ofToolResult)
                 .toList();
         return MessageParam.builder().role(MessageParam.Role.USER).contentOfBlockParams(results).build();
     }
 
-    private ToolResultBlockParam runTool(ToolUseBlock toolUse) {
+    private ToolResultBlockParam runTool(ToolUseBlock toolUse, Tools tools) {
         ToolResultBlockParam.Builder result = ToolResultBlockParam.builder().toolUseId(toolUse.id());
         try {
             return result.content(tools.execute(toolUse.name(), inputOf(toolUse._input()))).build();

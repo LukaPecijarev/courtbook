@@ -1,3 +1,5 @@
+import { months, weekdays } from '../content/assistant'
+
 function pad(value: number): string {
   return String(value).padStart(2, '0')
 }
@@ -38,6 +40,12 @@ export function formatMonthRange(first: Date, last: Date): string {
     return `${monthFormat.format(first)} – ${monthYearFormat.format(last)}`
   }
   return `${monthYearFormat.format(first)} – ${monthYearFormat.format(last)}`
+}
+
+/** "сабота, 25 октомври" */
+export function formatMacedonianDate(localDateTime: string): string {
+  const date = new Date(localDateTime)
+  return `${weekdays[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]}`
 }
 
 export function formatLongDate(localDateTime: string): string {

@@ -1,0 +1,585 @@
+.assistant {
+  --assistant-page: #0d0d0f;
+  --assistant-surface: #15171c;
+  --assistant-raised: #1c1f25;
+  --assistant-text: #ece8e0;
+  --assistant-muted: #8d9099;
+  --assistant-line: rgba(244, 239, 230, 0.09);
+  --assistant-line-strong: rgba(244, 239, 230, 0.16);
+  --assistant-error: #ff8a80;
+  --assistant-online: #43d17a;
+  --assistant-edge: 24px;
+  --assistant-lift: 0px;
+  --assistant-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  position: fixed;
+  right: var(--assistant-edge);
+  bottom: calc(var(--assistant-edge) + var(--assistant-lift) + env(safe-area-inset-bottom));
+  z-index: 800;
+  font-family: 'Inter Variable', system-ui, 'Segoe UI', sans-serif;
+  color: var(--assistant-text);
+}
+
+/* Below 960px venue pages keep their booking bar at the bottom; stay above it. */
+@media (max-width: 959px) {
+  body:has(.booking-bar) .assistant {
+    --assistant-lift: 148px;
+  }
+}
+
+.assistant svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.assistant-dot {
+  position: absolute;
+  right: 1px;
+  bottom: 1px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--assistant-surface);
+  border-radius: 50%;
+  background: var(--assistant-online);
+}
+
+/* Launcher */
+
+.assistant-launcher {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  border: 1px solid var(--assistant-line-strong);
+  border-radius: 50%;
+  background: var(--assistant-surface);
+  color: var(--accent);
+  box-shadow:
+    0 12px 32px -8px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  animation: assistant-launcher-in 400ms var(--assistant-ease) both;
+  transition:
+    transform 300ms var(--assistant-ease),
+    border-color 300ms ease,
+    box-shadow 300ms ease;
+}
+
+.assistant-launcher:hover,
+.assistant-launcher:focus-visible {
+  border-color: var(--accent);
+  box-shadow:
+    0 14px 36px -8px rgba(0, 0, 0, 0.75),
+    0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent);
+  transform: translateY(-2px);
+}
+
+.assistant-launcher:focus-visible {
+  outline: none;
+}
+
+.assistant-launcher .assistant-dot {
+  right: 4px;
+  bottom: 4px;
+}
+
+/* Panel */
+
+.assistant-panel {
+  display: flex;
+  flex-direction: column;
+  width: 360px;
+  height: min(540px, calc(100svh - 2 * var(--assistant-edge) - var(--assistant-lift)));
+  overflow: hidden;
+  border: 1px solid var(--assistant-line-strong);
+  border-radius: 22px;
+  background: var(--assistant-surface);
+  box-shadow:
+    0 28px 64px -16px rgba(0, 0, 0, 0.8),
+    0 2px 8px rgba(0, 0, 0, 0.4);
+  transform-origin: bottom right;
+  animation: assistant-panel-in 420ms var(--assistant-ease) both;
+}
+
+.assistant-panel[data-state='closing'] {
+  animation: assistant-panel-out 260ms ease-in both;
+}
+
+.assistant-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 12px 14px 16px;
+  border-bottom: 1px solid var(--assistant-line);
+}
+
+.assistant-avatar {
+  position: relative;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: 0 6px 16px -6px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.assistant-avatar .sport-icon {
+  fill: none;
+  stroke: currentColor;
+}
+
+.assistant-header__titles {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.assistant-header__titles strong {
+  font-size: 0.98rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--assistant-text);
+}
+
+.assistant-header__titles span {
+  overflow: hidden;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  letter-spacing: 0.04em;
+  color: var(--assistant-muted);
+}
+
+.assistant-icon-button {
+  position: relative;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--assistant-muted);
+  cursor: pointer;
+  transition:
+    background-color 250ms ease,
+    color 250ms ease;
+}
+
+.assistant-icon-button:hover,
+.assistant-icon-button:focus-visible {
+  outline: none;
+  background: rgba(244, 239, 230, 0.07);
+  color: var(--assistant-text);
+}
+
+.assistant-icon-button[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  z-index: 1;
+  padding: 5px 9px;
+  border: 1px solid var(--assistant-line-strong);
+  border-radius: 8px;
+  background: var(--assistant-raised);
+  color: var(--assistant-text);
+  font-size: 0.7rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -2px);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.assistant-icon-button[data-tooltip]:hover::after,
+.assistant-icon-button[data-tooltip]:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* Messages */
+
+.assistant-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--assistant-page);
+  scrollbar-width: thin;
+  scrollbar-color: var(--assistant-line-strong) transparent;
+}
+
+.assistant-message {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  animation: assistant-message-in 320ms ease both;
+}
+
+.assistant-message[data-role='user'] {
+  align-items: flex-end;
+}
+
+.assistant-bubble {
+  max-width: 84%;
+  margin: 0;
+  padding: 9px 14px;
+  border: 1px solid var(--assistant-line);
+  border-radius: 18px 18px 18px 6px;
+  background: var(--assistant-raised);
+  font-size: 0.84rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--assistant-text);
+}
+
+.assistant-message[data-role='user'] .assistant-bubble {
+  border-color: transparent;
+  border-radius: 18px 18px 6px 18px;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.assistant-bubble[data-tone='error'] {
+  border-color: color-mix(in srgb, var(--assistant-error) 35%, transparent);
+  color: var(--assistant-error);
+}
+
+.assistant-note {
+  margin: 0;
+  padding-left: 4px;
+  font-size: 0.74rem;
+  color: var(--assistant-muted);
+}
+
+.assistant-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 90%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.assistant-slot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px 8px 8px;
+  border: 1px solid var(--assistant-line);
+  border-radius: 14px;
+  background: var(--assistant-surface);
+  color: var(--assistant-text);
+  text-decoration: none;
+  transition:
+    border-color 250ms ease,
+    transform 250ms var(--assistant-ease);
+}
+
+.assistant-slot:hover,
+.assistant-slot:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.assistant-slot__time {
+  flex: 0 0 auto;
+  padding: 6px 8px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.assistant-slot__venue {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.assistant-slot__venue strong {
+  overflow: hidden;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.assistant-slot__venue span {
+  font-size: 0.7rem;
+  color: var(--assistant-muted);
+}
+
+.assistant-slot svg {
+  flex: 0 0 auto;
+  color: var(--assistant-muted);
+  transition:
+    color 250ms ease,
+    transform 250ms ease;
+}
+
+.assistant-slot:hover svg,
+.assistant-slot:focus-visible svg {
+  color: var(--accent);
+  transform: translateX(2px);
+}
+
+.assistant-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  animation: assistant-message-in 420ms ease both;
+}
+
+.assistant-chip {
+  padding: 7px 13px;
+  border: 1px solid var(--assistant-line-strong);
+  border-radius: 999px;
+  background: var(--assistant-surface);
+  color: var(--assistant-text);
+  font-family: inherit;
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition:
+    background-color 250ms ease,
+    border-color 250ms ease,
+    color 250ms ease,
+    transform 250ms ease;
+}
+
+.assistant-chip:hover,
+.assistant-chip:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+  transform: translateY(-1px);
+}
+
+.assistant-typing {
+  display: flex;
+  gap: 5px;
+  padding: 13px 16px;
+}
+
+.assistant-typing span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: assistant-typing-dot 1.2s ease-in-out infinite;
+}
+
+.assistant-typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.assistant-typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* Composer */
+
+.assistant-composer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--assistant-line);
+}
+
+.assistant-composer__input {
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+  padding: 0 16px;
+  border: 1px solid var(--assistant-line-strong);
+  border-radius: 999px;
+  background: var(--assistant-page);
+  color: var(--assistant-text);
+  font-family: inherit;
+  font-size: 0.84rem;
+  transition:
+    border-color 250ms ease,
+    box-shadow 250ms ease;
+}
+
+.assistant-composer__input::placeholder {
+  color: var(--assistant-muted);
+}
+
+.assistant-composer__input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.assistant-send {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  cursor: pointer;
+  transition:
+    opacity 250ms ease,
+    transform 250ms var(--assistant-ease);
+}
+
+.assistant-send:not(:disabled):hover,
+.assistant-send:focus-visible {
+  outline: none;
+  transform: translateY(-1px) scale(1.05);
+}
+
+.assistant-send:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+@media (max-width: 480px) {
+  .assistant {
+    --assistant-edge: 16px;
+  }
+
+  .assistant:has(.assistant-panel) {
+    left: 12px;
+    right: 12px;
+  }
+
+  .assistant-launcher {
+    width: 52px;
+    height: 52px;
+  }
+
+  .assistant-panel {
+    width: 100%;
+    height: min(560px, calc(100svh - 2 * var(--assistant-edge) - var(--assistant-lift)));
+    border-radius: 20px;
+  }
+
+  .assistant-header {
+    gap: 10px;
+    padding: 12px 6px 12px 12px;
+  }
+
+  .assistant-header__titles span {
+    letter-spacing: 0.01em;
+  }
+
+  .assistant-body {
+    padding: 14px 12px;
+  }
+
+  .assistant-slots {
+    width: 100%;
+  }
+
+  /* 16px keeps iOS Safari from zooming the page when the field gets focus. */
+  .assistant-composer__input {
+    font-size: 16px;
+  }
+}
+
+@keyframes assistant-launcher-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.8);
+  }
+}
+
+@keyframes assistant-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.94);
+  }
+}
+
+@keyframes assistant-panel-out {
+  to {
+    opacity: 0;
+    transform: translateY(18px) scale(0.95);
+  }
+}
+
+@keyframes assistant-message-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@keyframes assistant-typing-dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.4;
+    transform: translateY(0);
+  }
+
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .assistant-launcher,
+  .assistant-panel,
+  .assistant-panel[data-state='closing'],
+  .assistant-message,
+  .assistant-chips {
+    animation: none;
+  }
+
+  .assistant-typing span {
+    animation-duration: 2.4s;
+  }
+
+  .assistant-launcher,
+  .assistant-chip,
+  .assistant-slot,
+  .assistant-send {
+    transition: none;
+  }
+
+  .assistant-launcher:hover,
+  .assistant-launcher:focus-visible,
+  .assistant-chip:hover,
+  .assistant-chip:focus-visible,
+  .assistant-slot:hover,
+  .assistant-slot:focus-visible,
+  .assistant-send:not(:disabled):hover,
+  .assistant-send:focus-visible {
+    transform: none;
+  }
+}

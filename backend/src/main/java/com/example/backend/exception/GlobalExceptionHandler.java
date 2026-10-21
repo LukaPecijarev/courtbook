@@ -32,6 +32,18 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(e.getMessage());
     }
 
+    @ExceptionHandler(TooManyRequestsException.class)
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    public ErrorResponse handleTooManyRequests(TooManyRequestsException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(AssistantUnavailableException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public ErrorResponse handleAssistantUnavailable(AssistantUnavailableException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
     @ExceptionHandler({IllegalArgumentException.class, MissingServletRequestParameterException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBadRequest(Exception e) {

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent, type RefObject } from 'react'
 import { ApiError } from '../../api/client'
-import { createBooking, type VenueResponse } from '../../api/venues'
+import { createBooking, type BookingResponse, type VenueResponse } from '../../api/venues'
 import { bookingForm } from '../../content/venuePage'
 import { formatLongDate, formatTime } from '../../utils/date'
 import { formatPricePerHour } from '../../utils/ui'
@@ -39,6 +39,7 @@ export function BookingDialog({ venue, sportId, startAt, onClose, onAvailability
   const [email, setEmail] = useState('')
   const [errors, setErrors] = useState<FieldErrors>({})
   const [status, setStatus] = useState<Status>('editing')
+  const [booking, setBooking] = useState<BookingResponse>()
   const nameInput = useRef<HTMLInputElement>(null)
   const emailInput = useRef<HTMLInputElement>(null)
   const submitting = status === 'submitting'
@@ -68,7 +69,7 @@ export function BookingDialog({ venue, sportId, startAt, onClose, onAvailability
 
     setStatus('submitting')
     try {
-      await createBooking(venue.id, { sportId, startAt, customerName: name.trim(), customerEmail: email.trim() })
+      setBooking(await createBooking(venue.id, { sportId, startAt, customerName: name.trim(), customerEmail: email.trim() }))
       setStatus('success')
       onAvailabilityChanged()
     } catch (error) {
@@ -78,7 +79,9 @@ export function BookingDialog({ venue, sportId, startAt, onClose, onAvailability
     }
   }
 
-  const summary = `${venue.name} · ${formatLongDate(startAt)} · ${formatTime(startAt)} · ${formatPricePerHour(venue.pricePerHour)}`
+  const summary = booking
+    ? `${booking.venueName} · ${formatLongDate(booking.startAt)} · ${formatTime(booking.startAt)} · ${booking.durationMinutes} min · ${formatPricePerHour(venue.pricePerHour)}`
+    : `${venue.name} · ${formatLongDate(startAt)} · ${formatTime(startAt)} · ${formatPricePerHour(venue.pricePerHour)}`
 
   return (
     <div className="booking-dialog" onClick={(event) => event.target === event.currentTarget && !submitting && onClose()}>

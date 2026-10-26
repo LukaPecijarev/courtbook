@@ -108,6 +108,10 @@ export function removeSlot(venueId: number, slotId: number, managementKey: strin
   return sendWithoutBody('DELETE', `/venues/${venueId}/slots/${slotId}`, managementHeaders(managementKey))
 }
 
+export function blockSlot(venueId: number, managementKey: string, startAt: string): Promise<void> {
+  return sendJson<void>('POST', `/venues/${venueId}/manage/blocks`, { startAt }, managementHeaders(managementKey))
+}
+
 export async function createBooking(
   venueId: number,
   request: { sportId: number; startAt: string; customerName: string; customerEmail: string },

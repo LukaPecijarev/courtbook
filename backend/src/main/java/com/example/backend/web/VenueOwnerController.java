@@ -1,6 +1,8 @@
 package com.example.backend.web;
 
 import com.example.backend.dto.AddVenueRequest;
+import com.example.backend.dto.BookingResponse;
+import com.example.backend.dto.CreateBlockRequest;
 import com.example.backend.dto.CreatedVenueResponse;
 import com.example.backend.dto.ManagedSlotResponse;
 import com.example.backend.dto.PublishSlotsRequest;
@@ -79,5 +81,13 @@ public class VenueOwnerController {
     public void removeSlot(@PathVariable Long id, @PathVariable Long slotId,
                            @RequestHeader(name = MANAGEMENT_KEY_HEADER, required = false) String managementKey) {
         venueOwnerApplicationService.removeSlot(id, slotId, managementKey);
+    }
+
+    @PostMapping("/{id}/manage/blocks")
+    @ResponseStatus(HttpStatus.CREATED)
+    public BookingResponse blockSlot(@PathVariable Long id,
+                                     @RequestHeader(name = MANAGEMENT_KEY_HEADER, required = false) String managementKey,
+                                     @Valid @RequestBody CreateBlockRequest request) {
+        return venueOwnerApplicationService.blockSlot(id, managementKey, request);
     }
 }

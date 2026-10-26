@@ -57,6 +57,8 @@ export const manageVenue = {
   slotsError: 'Could not load the slots. Please try again.',
   booked: 'Booked',
   remove: 'Remove',
+  block: 'Block',
+  blocked: 'Time blocked.',
   viewVenue: 'View court',
   notFound: 'We could not find this venue.',
 }

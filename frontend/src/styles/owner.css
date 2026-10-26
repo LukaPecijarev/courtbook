@@ -173,6 +173,30 @@
   opacity: 0.4;
 }
 
+.owner-slots__block {
+  margin-left: auto;
+}
+
+.owner-slots__block + .owner-slots__remove {
+  margin-left: 8px;
+}
+
+.owner-slots__select {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.owner-slots__select:disabled {
+  cursor: default;
+}
+
+.owner-slots__item--selected {
+  border-color: var(--accent);
+}
+
 .owner-slots__empty {
   color: var(--landing-text-muted);
 }

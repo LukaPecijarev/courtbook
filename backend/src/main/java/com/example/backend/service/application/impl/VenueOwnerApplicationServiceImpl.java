@@ -1,6 +1,8 @@
 package com.example.backend.service.application.impl;
 
 import com.example.backend.dto.AddVenueRequest;
+import com.example.backend.dto.BookingResponse;
+import com.example.backend.dto.CreateBlockRequest;
 import com.example.backend.dto.CreatedVenueResponse;
 import com.example.backend.dto.ManagedSlotResponse;
 import com.example.backend.dto.PublishSlotsRequest;
@@ -8,6 +10,7 @@ import com.example.backend.dto.UpdateVenueRequest;
 import com.example.backend.dto.VenueResponse;
 import com.example.backend.exception.SlotAlreadyBookedException;
 import com.example.backend.exception.UnauthorizedException;
+import com.example.backend.model.Booking;
 import com.example.backend.model.Venue;
 import com.example.backend.model.VenueSlot;
 import com.example.backend.repository.BookingRepository;
@@ -33,6 +36,7 @@ public class VenueOwnerApplicationServiceImpl implements VenueOwnerApplicationSe
     private final BookingRepository bookingRepository;
     private final EntityLookup entityLookup;
     private final SlotPublisher slotPublisher;
+    private final BookingWriter bookingWriter;
 
     @Override
     @Transactional
@@ -97,6 +101,14 @@ public class VenueOwnerApplicationServiceImpl implements VenueOwnerApplicationSe
             throw new SlotAlreadyBookedException(slot.getStartAt());
         }
         venueSlotRepository.delete(slot);
+    }
+
+    @Override
+    @Transactional
+    public BookingResponse blockSlot(Long venueId, String managementKey, CreateBlockRequest request) {
+        Venue venue = managedVenue(venueId, managementKey);
+        Booking booking = bookingWriter.save(venueId, request.startAt(), () -> Booking.blocked(venue, request.startAt()));
+        return BookingResponse.from(booking);
     }
 
     private Venue managedVenue(Long venueId, String managementKey) {

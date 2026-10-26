@@ -1,6 +1,8 @@
 package com.example.backend.service.application;
 
 import com.example.backend.dto.AddVenueRequest;
+import com.example.backend.dto.BookingResponse;
+import com.example.backend.dto.CreateBlockRequest;
 import com.example.backend.dto.CreatedVenueResponse;
 import com.example.backend.dto.ManagedSlotResponse;
 import com.example.backend.dto.PublishSlotsRequest;
@@ -23,4 +25,6 @@ public interface VenueOwnerApplicationService {
     List<ManagedSlotResponse> publishSlots(Long venueId, String managementKey, PublishSlotsRequest request);
 
     void removeSlot(Long venueId, Long slotId, String managementKey);
+
+    BookingResponse blockSlot(Long venueId, String managementKey, CreateBlockRequest request);
 }

@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ApiError } from '../api/client'
 import {
+  blockSlot,
   fetchManagedSlots,
   publishSlots,
   removeSlot,
@@ -168,6 +169,7 @@ function ManageVenue({ venue, sport, managementKey, onKeyRejected }: ManageVenue
   const [slotErrors, setSlotErrors] = useState<{ dates?: string; startTimes?: string }>({})
   const [publishState, setPublishState] = useState<ActionState>({ status: 'idle' })
   const [slotsVersion, setSlotsVersion] = useState(0)
+  const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null)
   const [deleting, setDeleting] = useState(false)
   const navigate = useNavigate()
   const slots = useAsync(`managed-slots:${venue.id}:${slotsVersion}`, (signal) =>
@@ -220,6 +222,15 @@ function ManageVenue({ venue, sport, managementKey, onKeyRejected }: ManageVenue
     run(async () => {
       await removeSlot(venue.id, slot.id, managementKey)
       setSlotsVersion((version) => version + 1)
+      setPublishState({ status: 'idle' })
+    }, setPublishState, venuePage.loadError)
+
+  const block = (slot: ManagedSlotResponse) =>
+    run(async () => {
+      await blockSlot(venue.id, managementKey, slot.startAt)
+      setSelectedSlotId(null)
+      setSlotsVersion((version) => version + 1)
+      setPublishState({ status: 'done', message: manageVenue.blocked })
     }, setPublishState, venuePage.loadError)
 
   const courtDeleted = () => {
@@ -287,7 +298,14 @@ function ManageVenue({ venue, sport, managementKey, onKeyRejected }: ManageVenue
         <SectionTitle id="manage-slots-title" size="sm">
           {manageVenue.slotsTitle}
         </SectionTitle>
-        <SlotList state={slots} onRemove={remove} busy={publishState.status === 'busy'} />
+        <SlotList
+          state={slots}
+          selectedId={selectedSlotId}
+          onSelect={setSelectedSlotId}
+          onBlock={block}
+          onRemove={remove}
+          busy={publishState.status === 'busy'}
+        />
         <Button to={venuePath(current, sport)} label={manageVenue.viewVenue} withArrow quiet />
       </Card>
 
@@ -313,6 +331,9 @@ function ActionMessage({ state }: { state: ActionState }) {
 interface SlotListProps {
   state: AsyncState<ManagedSlotResponse[]>
   busy: boolean
+  selectedId: number | null
+  onSelect: (slotId: number) => void
+  onBlock: (slot: ManagedSlotResponse) => void
   onRemove: (slot: ManagedSlotResponse) => void
 }
 
@@ -325,7 +346,7 @@ function groupByDate(slots: ManagedSlotResponse[]): [string, ManagedSlotResponse
   return [...groups]
 }
 
-function SlotList({ state, busy, onRemove }: SlotListProps) {
+function SlotList({ state, busy, selectedId, onSelect, onBlock, onRemove }: SlotListProps) {
   const slots = state.status === 'loaded' ? state.data : state.status === 'loading' ? state.previous : undefined
   if (state.status === 'error') return <p className="field__error" role="alert">{manageVenue.slotsError}</p>
   if (!slots) return <div className="skeleton skeleton--line" aria-busy="true" />
@@ -337,21 +358,43 @@ function SlotList({ state, busy, onRemove }: SlotListProps) {
         <div key={date} className="owner-slots__day">
           <p className="slot-grid__label">{formatLongDate(daySlots[0].startAt)}</p>
           <ul className="owner-slots__list">
-            {daySlots.map((slot) => (
-              <li key={slot.id} className="owner-slots__item">
-                <span className="owner-slots__time">{formatTime(slot.startAt)}</span>
-                {slot.booked && <span className="owner-slots__booked">{manageVenue.booked}</span>}
-                <button
-                  type="button"
-                  className="owner-slots__remove"
-                  disabled={slot.booked || busy}
-                  onClick={() => onRemove(slot)}
-                  aria-label={`${manageVenue.remove} ${formatLongDate(slot.startAt)} ${formatTime(slot.startAt)}`}
-                >
-                  {manageVenue.remove}
-                </button>
-              </li>
-            ))}
+            {daySlots.map((slot) => {
+              const selected = slot.id === selectedId
+              return (
+                <li key={slot.id} className={`owner-slots__item${selected ? ' owner-slots__item--selected' : ''}`}>
+                  <button
+                    type="button"
+                    className="owner-slots__time owner-slots__select"
+                    disabled={slot.booked || busy}
+                    aria-pressed={selected}
+                    onClick={() => onSelect(slot.id)}
+                  >
+                    {formatTime(slot.startAt)}
+                  </button>
+                  {slot.booked && <span className="owner-slots__booked">{manageVenue.booked}</span>}
+                  {selected && !slot.booked && (
+                    <button
+                      type="button"
+                      className="owner-slots__remove owner-slots__block"
+                      disabled={busy}
+                      onClick={() => onBlock(slot)}
+                      aria-label={`${manageVenue.block} ${formatLongDate(slot.startAt)} ${formatTime(slot.startAt)}`}
+                    >
+                      {manageVenue.block}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="owner-slots__remove"
+                    disabled={slot.booked || busy}
+                    onClick={() => onRemove(slot)}
+                    aria-label={`${manageVenue.remove} ${formatLongDate(slot.startAt)} ${formatTime(slot.startAt)}`}
+                  >
+                    {manageVenue.remove}
+                  </button>
+                </li>
+              )
+            })}
           </ul>
         </div>
       ))}

@@ -222,6 +222,7 @@ function ManageVenue({ venue, sport, managementKey, onKeyRejected }: ManageVenue
     run(async () => {
       await removeSlot(venue.id, slot.id, managementKey)
       setSlotsVersion((version) => version + 1)
+      setPublishState({ status: 'idle' })
     }, setPublishState, venuePage.loadError)
 
   const block = (slot: ManagedSlotResponse) =>
